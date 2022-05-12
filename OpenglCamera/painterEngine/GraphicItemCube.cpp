@@ -1,7 +1,7 @@
 #include "GraphicItemCube.h"
 
-GraphicItemCube::GraphicItemCube(std::string vertexPath, std::string fragmentPath)
-	:GraphicItemBase(vertexPath, fragmentPath)
+GraphicItemCube::GraphicItemCube(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+	:GraphicItemBase(vertexPath, fragmentPath,color)
 {
 
 }
@@ -34,5 +34,4 @@ void GraphicItemCube::drawCall()
 	//drawCall
 	int cubePointsNum = _vertices.size()/3;
 	glDrawArrays(GL_TRIANGLES, 0, cubePointsNum);
-	//std::cout << "draw Cube......" << cubePointsNum << std::endl;
 }

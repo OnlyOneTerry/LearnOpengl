@@ -29,7 +29,6 @@ void PainterScene::initScene()
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.1f, 0.0f, 0.0f));
 		view = _camera.GetViewMatrix();
 		projection = glm::perspective(glm::radians(_camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, _near, _far);
 
@@ -51,8 +50,6 @@ void PainterScene::initScene()
 
 void PainterScene::exitToClear()
 {
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
 	glfwTerminate();
 }
 void PainterScene::framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -167,20 +164,6 @@ bool  PainterScene::loadOPenglFun()
 	}
 
 	return true;
-}
-
-void PainterScene::initCubeVAOVBO()
-{
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	//绑定当前VAO
-	glBindVertexArray(VAO);
-	//绑定VBO到当前VAO
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//GPU开辟空间并传入数据
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
 }
 
 void PainterScene::addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath)

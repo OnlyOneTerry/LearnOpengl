@@ -1,7 +1,7 @@
 #include "GraphicItemLine.h"
 
-GraphicItemLine::GraphicItemLine(std::string vertexPath, std::string fragmentPath)
-	:GraphicItemBase(vertexPath, fragmentPath)
+GraphicItemLine::GraphicItemLine(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+	:GraphicItemBase(vertexPath, fragmentPath,color)
 {
 
 }

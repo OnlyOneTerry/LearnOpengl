@@ -39,66 +39,18 @@ public:
 	void addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath);
 public:
 	Camera _camera;
-	double lastX=0.0f;
-	double lastY=0.0f;
-	float  _near = 0.1f;
-	float  _far = 200.0f;
-	bool isMousePressed = false;
-	bool firstMouse = false;
 private:
 	//初始化窗口大小
 	int SCR_WIDTH = 1200;
 	int SCR_HEIGHT = 800;
-	unsigned int VBO, VAO;
-
+	double lastX = 0.0f;
+	double lastY = 0.0f;
+	float  _near = 0.1f;
+	float  _far = 200.0f;
+	bool isMousePressed = false;
+	bool firstMouse = false;
 	GLFWwindow* _window = nullptr;
 	//要渲染的数据点
-	//绘制立方体
-	float cubeVertices[108]=
-	{
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f, -0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-
-	-0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f, -0.5f,
-	 0.5f, -0.5f,  0.5f,
-	 0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f,  0.5f,
-	-0.5f, -0.5f, -0.5f,
-
-	-0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f,  0.5f,
-	 0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f,  0.5f,
-	-0.5f,  0.5f, -0.5f
-	};
-	
 	std::vector<GraphicItemBase*> _itemVec;
 };
 
