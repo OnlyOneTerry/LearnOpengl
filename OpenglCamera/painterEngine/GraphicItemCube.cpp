@@ -34,5 +34,5 @@ void GraphicItemCube::drawCall()
 	//drawCall
 	int cubePointsNum = _vertices.size()/3;
 	glDrawArrays(GL_TRIANGLES, 0, cubePointsNum);
-	std::cout << "draw Cube......" << cubePointsNum << std::endl;
+	//std::cout << "draw Cube......" << cubePointsNum << std::endl;
 }

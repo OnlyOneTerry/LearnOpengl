@@ -10,8 +10,8 @@ public:
 	GraphicItemBase(std::string vertexPath,std::string fragmentPath);
 	virtual ~GraphicItemBase();
 	void setVertexData(std::vector<float>& vertexs);
-    virtual void initVAOVBO();
-	virtual void drawCall();
+    virtual void initVAOVBO()=0;
+	virtual void drawCall()=0;
 	virtual void setModel(std::string name, glm::mat4 model);
 	virtual void setView(std::string name, glm::mat4 view);
 	virtual void setProjection(std::string name, glm::mat4 projection);

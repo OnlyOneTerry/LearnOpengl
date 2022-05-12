@@ -3,7 +3,7 @@
 #include "GraphicItemLine.h"
 #include "GraphicItemTriangle.h"
 #include "GraphicItemCube.h"
-
+#include "GraphicItemPoint.h"
 
 PainterScene::PainterScene() :_camera(glm::vec3(0.0f, 0.0f, 5.0f))
 {
@@ -17,25 +17,6 @@ PainterScene::~PainterScene()
 
 void PainterScene::initScene()
 {
-#if 0
-	if (!_window)
-	{
-		std::cout << "failed to create windows" << std::endl;
-		return ;
-	}
-	bool loadSucc = loadOPenglFun();
-	if (!loadSucc)
-	{
-		std::cout << "failed to load glad" << std::endl;
-		return ;
-	}
-	//创建Shader
-    Shader* cubeShader = new Shader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/cube.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/cube.fs");
-
-	//初始化方体VAO VBO
-	initCubeVAOVBO();
-#endif
-
 	//渲染循环
 	while (!glfwWindowShouldClose(_window))
 	{
@@ -43,28 +24,14 @@ void PainterScene::initScene()
 		//初始化场景背景色
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		//坐标转换
 		//创建变换矩阵
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		model = glm::rotate(model, glm::radians(30.0f), glm::vec3(0.1f, 0.0f, 0.0f));
 		view = _camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 200.0f);
-
-# if 0
-		//将model,view,projection传入shader
-		cubeShader->setMat4("model", model);
-		cubeShader->setMat4("view", view);
-		cubeShader->setMat4("projection", projection);
-
-		//激活shader
-		cubeShader->use();
-		//激活要启用的VAO
-		glBindVertexArray(VAO);
-		//drawCall
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-#endif
+		projection = glm::perspective(glm::radians(_camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, _near, _far);
 
 		for (int i = 0; i < _itemVec.size(); i++)
 		{
@@ -137,12 +104,26 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 		}
 	}
 }
+
+void PainterScene::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	_camera.ProcessMouseScroll(yoffset);
+}
+
 void PainterScene::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 }
 
+void PainterScene::setNear(float nearDis)
+{
+	_near = nearDis;
+}
+void PainterScene::setFar(float farDis)
+{
+	_far = farDis;
+}
 //初始化窗口
 GLFWwindow* PainterScene::initWindow()
 {
@@ -188,7 +169,7 @@ bool  PainterScene::loadOPenglFun()
 	return true;
 }
 
-void PainterScene::initVAOVBO()
+void PainterScene::initCubeVAOVBO()
 {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -197,37 +178,17 @@ void PainterScene::initVAOVBO()
 	//绑定VBO到当前VAO
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	//GPU开辟空间并传入数据
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-}
-
-void PainterScene::initLineVAOVBO()
-{
-	glGenVertexArrays(1, &LineVAO);
-	glGenBuffers(1, &LineVBO);
-	//绑定当前VAO
-	glBindVertexArray(LineVAO);
-	//绑定VBO到当前VAO
-	glBindBuffer(GL_ARRAY_BUFFER, LineVBO);
-	//GPU开辟空间并传入数据
-	glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-}
-
-void PainterScene::initCubeVAOVBO()
-{
-	glGenVertexArrays(1, &cubeVAO);
-	glGenBuffers(1, &cubeVBO);
-	//绑定当前VAO
-	glBindVertexArray(cubeVAO);
-	//绑定VBO到当前VAO
-	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
-	//GPU开辟空间并传入数据
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+}
+
+void PainterScene::addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath)
+{
+	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath);
+	PointItem->setVertexData(vertexData);
+	PointItem->initVAOVBO();
+	_itemVec.push_back(PointItem);
 }
 
 void PainterScene::addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath)

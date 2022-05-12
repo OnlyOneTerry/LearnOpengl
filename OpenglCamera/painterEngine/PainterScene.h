@@ -17,8 +17,11 @@ public:
 	void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 	void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int modes);
+	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	void processInput(GLFWwindow* window);
-
+	//设置近平面远平面
+	void setNear(float nearDis);
+	void setFar(float farDis);
 	//初始化窗口
 	GLFWwindow* initWindow();
 	GLFWwindow* getWindow();
@@ -30,6 +33,7 @@ public:
 	void initCubeVAOVBO();
 
 	//添加绘制接口
+	void addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath);
 	void addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath);
 	void addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath);
 	void addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath);
@@ -37,14 +41,15 @@ public:
 	Camera _camera;
 	double lastX=0.0f;
 	double lastY=0.0f;
-
+	float  _near = 0.1f;
+	float  _far = 200.0f;
 	bool isMousePressed = false;
 	bool firstMouse = false;
 private:
 	//初始化窗口大小
-	int SCR_WIDTH = 800;
-	int SCR_HEIGHT = 600;
-	unsigned int cubeVBO, cubeVAO;
+	int SCR_WIDTH = 1200;
+	int SCR_HEIGHT = 800;
+	unsigned int VBO, VAO;
 
 	GLFWwindow* _window = nullptr;
 	//要渲染的数据点

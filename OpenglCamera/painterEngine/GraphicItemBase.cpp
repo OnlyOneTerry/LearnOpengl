@@ -8,18 +8,11 @@ GraphicItemBase::GraphicItemBase(std::string vertexPath, std::string fragmentPat
 
 GraphicItemBase::~GraphicItemBase()
 {
-
+	if (_shader)
+		delete _shader;
+	_shader = nullptr;
 }
 
-void GraphicItemBase::initVAOVBO()
-{
-
-}
-
-void GraphicItemBase::drawCall()
-{
-
-}
 
 void GraphicItemBase::setVertexData(std::vector<float>& vertexs)
 {
