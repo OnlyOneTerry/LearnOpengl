@@ -1,4 +1,5 @@
 #include"../painterEngine/PainterScene.h"
+#include "../common/commonDef.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -35,7 +36,19 @@ int main()
 	   0.0f,0.0f,3.0f
 	};
 
-	std::vector<float> lineData = {
+	std::vector<PL::TVertex> lineData;
+	PL::TVertex vertex1;
+	vertex1.Position = glm::vec3(-2.5f, 2.5f, 0.0f);
+	vertex1.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	PL::TVertex vertex2;
+	vertex2.Position = glm::vec3(-2.5f, 4.5f, 0.0f);
+	vertex2.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	lineData.push_back(vertex1);
+	lineData.push_back(vertex2);
+
+	std::vector<float> lineData1 = {
 		  -2.5f,2.5f,0.0f,
 	      -2.5f,4.5f,0.0f
 	};
@@ -104,17 +117,17 @@ int main()
 
 	std::string baseDir = "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/";
 
-	painterScene.addPoint(pointData, baseDir +"point.vs", baseDir + "point.fs",glm::vec3(1.0f,1.0f,0.0f));
+	//painterScene.addPoint(pointData, baseDir +"point.vs", baseDir + "point.fs",glm::vec3(1.0f,1.0f,0.0f));
 	painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
-	painterScene.addLine(lineData2, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 0.0f));
-    painterScene.addTriangle(triangleData, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
-    painterScene.addTriangle(triangle2Data, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
-	painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
+	painterScene.addCircle(lineData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));
+	//painterScene.addLine(lineData2, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+ //   painterScene.addTriangle(triangleData, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+ //   painterScene.addTriangle(triangle2Data, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	//painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
 
 #endif
 	//≥ı ºªØ≥°æ∞
 	painterScene.initScene();
-	getchar();
 	return 0;
 }
 

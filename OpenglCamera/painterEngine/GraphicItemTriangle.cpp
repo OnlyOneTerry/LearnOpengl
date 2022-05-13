@@ -13,25 +13,25 @@ GraphicItemTriangle::~GraphicItemTriangle()
 
 void GraphicItemTriangle::initVAOVBO()
 {
-	if (_vertices.size() < 1) return;
-	glGenVertexArrays(1, &_VAO);
-	glGenBuffers(1, &_VBO);
+	if (vertices_.size() < 1) return;
+	glGenVertexArrays(1, &vao_);
+	glGenBuffers(1, &vbo_);
 	//绑定当前VAO
-	glBindVertexArray(_VAO);
+	glBindVertexArray(vao_);
 	//绑定VBO到当前VAO
-	glBindBuffer(GL_ARRAY_BUFFER, _VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 	//GPU开辟空间并传入数据
-	glBufferData(GL_ARRAY_BUFFER,_vertices.size()*sizeof(float), &_vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER,vertices_.size()*sizeof(PL::TVertex), &vertices_[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 }
 void GraphicItemTriangle::drawCall()
 {
-	//std::cout << "draw Triangle......" << _VAO << std::endl;
+	//std::cout << "draw Triangle......" << vao_ << std::endl;
 	//激活shader
-	_shader->use();
+	shader_->use();
 	//激活要启用的VAO
-	glBindVertexArray(_VAO);
+	glBindVertexArray(vao_);
 	//drawCall
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }

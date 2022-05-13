@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="painterEngine\GraphicItemCircle.cpp" />
+    <ClCompile Include="painterEngine\GraphicItemPoint.cpp" />
     <ClCompile Include="painterEngine\GraphicItemCube.cpp" />
     <ClCompile Include="painterEngine\GraphicItemTriangle.cpp" />
     <ClCompile Include="painterEngine\GraphicItemLine.cpp" />
@@ -149,6 +151,9 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common\commonDef.h" />
+    <ClInclude Include="painterEngine\GraphicItemCircle.h" />
+    <ClInclude Include="painterEngine\GraphicItemPoint.h" />
     <ClInclude Include="painterEngine\GraphicItemCube.h" />
     <ClInclude Include="painterEngine\GraphicItemTriangle.h" />
     <ClInclude Include="painterEngine\GraphicItemLine.h" />
@@ -165,10 +170,14 @@
     <ClInclude Include="painterEngine\PainterScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\circle.fs" />
+    <None Include="shaders\circle.vs" />
     <None Include="shaders\cube.fs" />
     <None Include="shaders\cube.vs" />
     <None Include="shaders\line.fs" />
     <None Include="shaders\line.vs" />
+    <None Include="shaders\point.fs" />
+    <None Include="shaders\point.vs" />
     <None Include="shaders\triangle.fs" />
     <None Include="shaders\triangle.vs" />
   </ItemGroup>

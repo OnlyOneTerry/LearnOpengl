@@ -63,6 +63,12 @@
     <ClCompile Include="painterEngine\GraphicItemCube.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="painterEngine\GraphicItemPoint.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="painterEngine\GraphicItemCircle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -107,6 +113,15 @@
     <ClInclude Include="painterEngine\GraphicItemCube.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="painterEngine\GraphicItemPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common\commonDef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="painterEngine\GraphicItemCircle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\triangle.fs" />
@@ -115,5 +130,9 @@
     <None Include="shaders\line.vs" />
     <None Include="shaders\cube.fs" />
     <None Include="shaders\cube.vs" />
+    <None Include="shaders\point.fs" />
+    <None Include="shaders\point.vs" />
+    <None Include="shaders\circle.fs" />
+    <None Include="shaders\circle.vs" />
   </ItemGroup>
 </Project>

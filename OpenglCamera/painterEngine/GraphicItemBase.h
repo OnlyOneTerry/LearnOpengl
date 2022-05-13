@@ -3,13 +3,14 @@
 #include <learnopengl/shader.h>
 #include <vector>
 #include <string>
+#include "../common/commonDef.h"
 
 class GraphicItemBase
 {
 public:
 	GraphicItemBase(std::string vertexPath, std::string fragmentPath, glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f));
 	virtual ~GraphicItemBase();
-	void setVertexData(std::vector<float>& vertexs);
+	void setVertexData(std::vector<PL::TVertex>& vertexs);
     virtual void initVAOVBO()=0;
 	virtual void drawCall()=0;
 	virtual void setModel(std::string name, glm::mat4 model);
@@ -17,8 +18,9 @@ public:
 	virtual void setProjection(std::string name, glm::mat4 projection);
 protected:
 	// ≥ı ºªØVAO
-    unsigned int _VBO, _VAO;
-	Shader* _shader;
-	std::vector<float> _vertices;
+    unsigned int vbo_, vao_;
+	Shader* shader_;
+	//std::vector<float> vertices_;
+	std::vector<PL::TVertex> vertices_;
 };
 
