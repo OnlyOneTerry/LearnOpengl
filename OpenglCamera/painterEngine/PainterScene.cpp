@@ -30,7 +30,7 @@ void PainterScene::initScene()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = _camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(_camera.Zoom), (float)SCR_WIDTH / SCR_HEIGHT, _near, _far);
+		projection = glm::perspective(glm::radians(_camera.Zoom), (float)_SCR_WIDTH / _SCR_HEIGHT, _near, _far);
 
 		for (int i = 0; i < _itemVec.size(); i++)
 		{
@@ -58,20 +58,20 @@ void PainterScene::framebuffer_size_callback(GLFWwindow* window, int width, int 
 }
 void PainterScene::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (!isMousePressed) return;
+	if (!_isMousePressed) return;
 
-	if (firstMouse)
+	if (_firstMouse)
 	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
+		_lastX = xpos;
+		_lastY = ypos;
+		_firstMouse = false;
 	}
 
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = xpos - _lastX;
+	float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top
 
-	lastX = xpos;
-	lastY = ypos;
+	_lastX = xpos;
+	_lastY = ypos;
 
 	_camera.ProcessMouseRotate(xoffset, yoffset);
 }
@@ -83,7 +83,7 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 		{
 		case GLFW_MOUSE_BUTTON_LEFT:
 			//std::cout << "..............left mouse pressed .............." << std::endl;
-			isMousePressed = true;
+			_isMousePressed = true;
 		default:
 			break;
 		}
@@ -94,8 +94,8 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 		switch (button)
 		{
 		case GLFW_MOUSE_BUTTON_LEFT:
-			isMousePressed = false;
-			firstMouse = true;
+			_isMousePressed = false;
+			_firstMouse = true;
 		default:
 			break;
 		}
@@ -135,7 +135,7 @@ GLFWwindow* PainterScene::initWindow()
 	//´´½¨ window
 
 	GLFWwindow* window = nullptr;
-	window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	_window = window;
 	if (window == nullptr)
 	{
@@ -166,33 +166,33 @@ bool  PainterScene::loadOPenglFun()
 	return true;
 }
 
-void PainterScene::addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath)
+void PainterScene::addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
-	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath);
+	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath,color);
 	PointItem->setVertexData(vertexData);
 	PointItem->initVAOVBO();
 	_itemVec.push_back(PointItem);
 }
 
-void PainterScene::addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath)
+void PainterScene::addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
-	GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath);
+	GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath,color);
 	lineItem->setVertexData(vertexData);
 	lineItem->initVAOVBO();
 	_itemVec.push_back(lineItem);
 }
 
-void PainterScene::addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath)
+void PainterScene::addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
-	GraphicItemCube* cubeItem = new GraphicItemCube(vsPath, fsPath);
+	GraphicItemCube* cubeItem = new GraphicItemCube(vsPath, fsPath,color);
 	cubeItem->setVertexData(vertexData);
 	cubeItem->initVAOVBO();
 	_itemVec.push_back(cubeItem);
 }
 
-void PainterScene::addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath)
+void PainterScene::addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
-	GraphicItemTriangle* triangleItem = new GraphicItemTriangle(vsPath, fsPath);
+	GraphicItemTriangle* triangleItem = new GraphicItemTriangle(vsPath, fsPath,color);
 	triangleItem->setVertexData(vertexData);
 	triangleItem->initVAOVBO();
 	_itemVec.push_back(triangleItem);

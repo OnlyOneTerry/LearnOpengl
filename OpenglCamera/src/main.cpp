@@ -3,7 +3,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int modes);
-
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 PainterScene painterScene;
 
 int main()
@@ -16,6 +16,7 @@ int main()
 		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
+		glfwSetScrollCallback(window, scroll_callback);
 	}
 	else
 	{
@@ -29,6 +30,11 @@ int main()
 	}
 #if 1
 	//添加图元
+
+	std::vector<float> pointData = {
+	   0.0f,0.0f,3.0f
+	};
+
 	std::vector<float> lineData = {
 		  -2.5f,2.5f,0.0f,
 	      -2.5f,4.5f,0.0f
@@ -96,11 +102,14 @@ int main()
 	-0.5f,  0.5f, -0.5f
 	};
 
-	painterScene.addLine(lineData, "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/line.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/line.fs");
-	painterScene.addLine(lineData2, "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/line.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/line.fs");
-    painterScene.addTriangle(triangleData, "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/triangle.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/triangle.fs");
-    painterScene.addTriangle(triangle2Data, "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/triangle.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/triangle.fs");
-	painterScene.addCube(cubeData, "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/cube.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/cube.fs");
+	std::string baseDir = "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/";
+
+	painterScene.addPoint(pointData, baseDir +"point.vs", baseDir + "point.fs",glm::vec3(1.0f,1.0f,0.0f));
+	painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	painterScene.addLine(lineData2, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+    painterScene.addTriangle(triangleData, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+    painterScene.addTriangle(triangle2Data, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
 
 #endif
 	//初始化场景
@@ -124,3 +133,7 @@ void mouse_button_callback(GLFWwindow * window, int button, int action, int mode
 	painterScene.mouse_button_callback(window, button, action, modes);
 }
 
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	painterScene.scroll_callback(window, xoffset, yoffset);
+}
