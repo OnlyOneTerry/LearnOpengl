@@ -1,0 +1,105 @@
+#include "GraphicItemCircle.h"
+
+GraphicItemCircle::GraphicItemCircle(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+	:GraphicItemBase(vertexPath, fragmentPath, color)
+{
+
+}
+
+GraphicItemCircle::~GraphicItemCircle()
+{
+
+}
+
+void GraphicItemCircle::initVAOVBO()
+{
+	vertices_.clear();
+	buildCylinderVertices(vertices_);
+
+	glGenVertexArrays(1, &vao_);
+	glGenBuffers(1, &vbo_);
+
+	glBindVertexArray(vao_);
+	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(PL::TVertex), &vertices_[0], GL_STATIC_DRAW);
+
+	//位置属性
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//法线 属性
+	//glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(TVertex),(void*)offsetof(TVertex, TVertex::Normal));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+}
+
+std::vector<PL::TVertex> GraphicItemCircle::getUnitCircleVertices()
+{
+	const float PI = 3.1415926f;
+	float sectorStep = 2 * PI / sector_count_;
+	float sectorAngle = 0.0f;
+
+	glm::vec3 position;
+	glm::vec3 normal;
+	PL::TVertex tVertex;
+
+	std::vector<PL::TVertex> unitCircleVertices;
+	for (int i = 0; i <= sector_count_; i++)
+	{
+		sectorAngle = i * sectorStep;
+		position.x = pier_radius_ * cos(sectorAngle);
+		position.y = 0.0f;
+		position.z = pier_radius_ * sin(sectorAngle);
+
+		normal.x = cos(sectorAngle);
+		normal.y = 0.0f;
+		normal.z = sin(sectorAngle);
+
+		tVertex.Position = position;
+		tVertex.Normal = normal;
+		unitCircleVertices.push_back(tVertex);
+	}
+	return unitCircleVertices;
+}
+void GraphicItemCircle::buildCylinderVertices(std::vector<PL::TVertex>& vertices)
+{
+	std::vector<PL::TVertex> unitVertices = getUnitCircleVertices();
+
+	// 获取上、下圆周点数组
+	std::vector<PL::TVertex> vctTop;
+	std::vector<PL::TVertex> vctBot;
+
+	PL::TVertex tVertex;
+	for (int i = 0; i < unitVertices.size(); ++i)
+	{
+		tVertex.Position = unitVertices[i].Position;
+		tVertex.Position.y = pier_height_;
+		tVertex.Normal = unitVertices[i].Normal;
+		vctTop.push_back(tVertex);
+	}
+
+	//顶部圆形
+	glm::vec3 position;
+	for (int i = 0; i < vctTop.size() - 1; ++i)
+	{
+		glm::vec3 position(0.0f, pier_height_, 0.0f);
+		glm::vec3 normal(0.0f, 1.0f, 0.0f);
+		tVertex.Position = position;
+		tVertex.Normal = normal;
+		vertices.push_back(tVertex);
+
+		tVertex.Position = vctTop[i].Position;
+		vertices.push_back(tVertex);
+
+		tVertex.Position = vctTop[i + 1].Position;
+		vertices.push_back(tVertex);
+	}
+}
+void GraphicItemCircle::drawCall()
+{
+	//激活shader
+	shader_->use();
+	//激活要启用的VAO
+	glBindVertexArray(vao_);
+
+	glDrawArrays(GL_TRIANGLES, 0, vertices_.size());
+}
