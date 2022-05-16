@@ -6,7 +6,7 @@
 #include "GraphicItemPoint.h"
 #include "GraphicItemCircle.h"
 
-PainterScene::PainterScene() :_camera(glm::vec3(0.0f, 0.0f, 5.0f))
+PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 5.0f))
 {
 	
 }
@@ -20,13 +20,14 @@ void PainterScene::initScene()
 {
 	//initVAOVBO();
 	//渲染循环
-	while (!glfwWindowShouldClose(_window))
+	while (!glfwWindowShouldClose(window_))
 	{
-		processInput(_window);
+		processInput(window_);
+		glEnable(GL_DEPTH_TEST);
 		//初始化场景背景色
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
 #if 0
 		Shader circleShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
 #endif
@@ -36,32 +37,33 @@ void PainterScene::initScene()
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
-		view = _camera.GetViewMatrix();
-		projection = glm::perspective(glm::radians(_camera.Zoom), (float)_SCR_WIDTH / _SCR_HEIGHT, _near, _far);
-
+		view = camera_.GetViewMatrix();
+		projection = glm::perspective(glm::radians(camera_.Zoom), (float)scr_width_ / scr_height_, near_, far_);
+		
 #if 0
 		//绘制圆
 		circleShader.use();
 		circleShader.setMat4("model", model);
 		circleShader.setMat4("view", view);
 		circleShader.setMat4("projection", projection);
+		circleShader.setVec3("color", glm::vec3(1.0f,0.0f,1.0f));
 		glBindVertexArray(VAO);
-		//glDrawArrays(GL_POINTS, 0, _pierVertices.size());
+		//glDrawArrays(GL_LINES, 0, _pierVertices.size());
 		glDrawArrays(GL_TRIANGLES, 0, _pierVertices.size());
 #endif 
 
 
 #if 1
-		for (int i = 0; i < _itemVec.size(); i++)
+		for (int i = 0; i < itemVec_.size(); i++)
 		{
-			_itemVec[i]->setModel("model", model);
-			_itemVec[i]->setView("view", view);
-			_itemVec[i]->setProjection("projection", projection);
-			_itemVec[i]->drawCall();
+			itemVec_[i]->setModel("model", model);
+			itemVec_[i]->setView("view", view);
+			itemVec_[i]->setProjection("projection", projection);
+			itemVec_[i]->drawCall();
 		}
 #endif 
 		//交换渲染缓冲
-		glfwSwapBuffers(_window);
+		glfwSwapBuffers(window_);
 		glfwPollEvents();
 	}
 
@@ -78,22 +80,23 @@ void PainterScene::framebuffer_size_callback(GLFWwindow* window, int width, int 
 }
 void PainterScene::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (!_isMousePressed) return;
+	if (!is_mouse_pressed_) return;
 
-	if (_firstMouse)
+	if (first_mouse_)
 	{
-		_lastX = xpos;
-		_lastY = ypos;
-		_firstMouse = false;
+		last_x_ = xpos;
+		last_y_ = ypos;
+		first_mouse_ = false;
 	}
 
-	float xoffset = xpos - _lastX;
-	float yoffset = _lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float xoffset = xpos - last_x_;
+	float yoffset = last_y_ - ypos; // reversed since y-coordinates go from bottom to top
 
-	_lastX = xpos;
-	_lastY = ypos;
+	last_x_ = xpos;
+	last_y_ = ypos;
 
-	_camera.ProcessMouseRotate(xoffset, yoffset);
+	camera_.ProcessMouseRotate(xoffset, yoffset);
+	//camera_.ProcessMouseMovement(xoffset, yoffset);
 }
 void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int action, int modes)
 {
@@ -103,7 +106,7 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 		{
 		case GLFW_MOUSE_BUTTON_LEFT:
 			//std::cout << "..............left mouse pressed .............." << std::endl;
-			_isMousePressed = true;
+			is_mouse_pressed_ = true;
 		default:
 			break;
 		}
@@ -114,8 +117,8 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 		switch (button)
 		{
 		case GLFW_MOUSE_BUTTON_LEFT:
-			_isMousePressed = false;
-			_firstMouse = true;
+			is_mouse_pressed_ = false;
+			first_mouse_ = true;
 		default:
 			break;
 		}
@@ -124,7 +127,7 @@ void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int act
 
 void PainterScene::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	_camera.ProcessMouseScroll(yoffset);
+	camera_.ProcessMouseScroll(yoffset);
 }
 
 void PainterScene::processInput(GLFWwindow* window)
@@ -135,11 +138,11 @@ void PainterScene::processInput(GLFWwindow* window)
 
 void PainterScene::setNear(float nearDis)
 {
-	_near = nearDis;
+	near_ = nearDis;
 }
 void PainterScene::setFar(float farDis)
 {
-	_far = farDis;
+	far_ = farDis;
 }
 //初始化窗口
 GLFWwindow* PainterScene::initWindow()
@@ -155,8 +158,8 @@ GLFWwindow* PainterScene::initWindow()
 	//创建 window
 
 	GLFWwindow* window = nullptr;
-	window = glfwCreateWindow(_SCR_WIDTH, _SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-	_window = window;
+	window = glfwCreateWindow(scr_width_, scr_height_, "LearnOpenGL", NULL, NULL);
+	window_ = window;
 	if (window == nullptr)
 	{
 		std::cout << "failed to  create GLFW window" << std::endl;
@@ -170,7 +173,7 @@ GLFWwindow* PainterScene::initWindow()
 }
 GLFWwindow * PainterScene::getWindow()
 {
-	return _window;
+	return window_;
 }
 //加载opengl函数指针
 bool  PainterScene::loadOPenglFun()
@@ -191,7 +194,7 @@ void PainterScene::addPoint(std::vector<PL::TVertex> vertexData, std::string vsP
 	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath,color);
 	PointItem->setVertexData(vertexData);
 	PointItem->initVAOVBO();
-	_itemVec.push_back(PointItem);
+	itemVec_.push_back(PointItem);
 }
 
 void PainterScene::addLine(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -199,7 +202,7 @@ void PainterScene::addLine(std::vector<PL::TVertex> vertexData, std::string vsPa
 	GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath,color);
 	lineItem->setVertexData(vertexData);
 	lineItem->initVAOVBO();
-	_itemVec.push_back(lineItem);
+	itemVec_.push_back(lineItem);
 }
 
 void PainterScene::addCube(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -207,7 +210,7 @@ void PainterScene::addCube(std::vector<PL::TVertex> vertexData, std::string vsPa
 	GraphicItemCube* cubeItem = new GraphicItemCube(vsPath, fsPath,color);
 	cubeItem->setVertexData(vertexData);
 	cubeItem->initVAOVBO();
-	_itemVec.push_back(cubeItem);
+	itemVec_.push_back(cubeItem);
 }
 
 void PainterScene::addTriangle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -215,7 +218,7 @@ void PainterScene::addTriangle(std::vector<PL::TVertex> vertexData, std::string 
 	GraphicItemTriangle* triangleItem = new GraphicItemTriangle(vsPath, fsPath,color);
 	triangleItem->setVertexData(vertexData);
 	triangleItem->initVAOVBO();
-	_itemVec.push_back(triangleItem);
+	itemVec_.push_back(triangleItem);
 }
 
 void PainterScene::addCircle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -223,15 +226,15 @@ void PainterScene::addCircle(std::vector<PL::TVertex> vertexData, std::string vs
 	GraphicItemCircle* circleItem = new GraphicItemCircle(vsPath, fsPath, color);
 	circleItem->setVertexData(vertexData);
 	circleItem->initVAOVBO();
-	_itemVec.push_back(circleItem);
+	itemVec_.push_back(circleItem);
 }
 
 
 void PainterScene::initVAOVBO()
 {
-	//_pierVertices = getUnitCircleVertices();
+	_pierVertices = getUnitCircleVertices();
 
-	buildCylinderVertices(_pierVertices);
+	//buildCylinderVertices(_pierVertices);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -247,7 +250,7 @@ void PainterScene::initVAOVBO()
 	//glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(TVertex),(void*)offsetof(TVertex, TVertex::Normal));
 	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(PL::TVertex),(void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
-
+	glBindVertexArray(0);
 }
 
 std::vector<PL::TVertex> PainterScene::getUnitCircleVertices()
