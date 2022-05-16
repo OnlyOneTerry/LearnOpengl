@@ -6,7 +6,7 @@
 #include "GraphicItemPoint.h"
 #include "GraphicItemCircle.h"
 
-PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 5.0f))
+PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 10.0f))
 {
 	
 }
@@ -189,7 +189,7 @@ bool  PainterScene::loadOPenglFun()
 	return true;
 }
 
-void PainterScene::addPoint(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath,color);
 	PointItem->setVertexData(vertexData);
@@ -197,7 +197,7 @@ void PainterScene::addPoint(std::vector<PL::TVertex> vertexData, std::string vsP
 	itemVec_.push_back(PointItem);
 }
 
-void PainterScene::addLine(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath,color);
 	lineItem->setVertexData(vertexData);
@@ -205,7 +205,7 @@ void PainterScene::addLine(std::vector<PL::TVertex> vertexData, std::string vsPa
 	itemVec_.push_back(lineItem);
 }
 
-void PainterScene::addCube(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemCube* cubeItem = new GraphicItemCube(vsPath, fsPath,color);
 	cubeItem->setVertexData(vertexData);
@@ -213,7 +213,7 @@ void PainterScene::addCube(std::vector<PL::TVertex> vertexData, std::string vsPa
 	itemVec_.push_back(cubeItem);
 }
 
-void PainterScene::addTriangle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemTriangle* triangleItem = new GraphicItemTriangle(vsPath, fsPath,color);
 	triangleItem->setVertexData(vertexData);
@@ -221,10 +221,11 @@ void PainterScene::addTriangle(std::vector<PL::TVertex> vertexData, std::string 
 	itemVec_.push_back(triangleItem);
 }
 
-void PainterScene::addCircle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addCircle(glm::vec3 origin, std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemCircle* circleItem = new GraphicItemCircle(vsPath, fsPath, color);
 	circleItem->setVertexData(vertexData);
+	circleItem->setOrgin(origin);
 	circleItem->initVAOVBO();
 	itemVec_.push_back(circleItem);
 }

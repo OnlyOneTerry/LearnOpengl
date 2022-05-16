@@ -21,6 +21,11 @@ void GraphicItemBase::setVertexData(std::vector<PL::TVertex>& vertexs)
 	vertices_ = vertexs;
 }
 
+void GraphicItemBase::setVertexData(std::vector<float>& vertexs)
+{
+	float_vertices_ = vertexs;
+}
+
 void GraphicItemBase::setModel(std::string name, glm::mat4 model)
 {
 	if (shader_)

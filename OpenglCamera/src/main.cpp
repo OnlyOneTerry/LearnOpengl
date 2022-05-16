@@ -32,43 +32,45 @@ int main()
 #if 1
 	//Ìí¼ÓÍ¼Ôª
 
-	std::vector<float> pointData = {
-	   0.0f,0.0f,3.0f
+	//std::vector<float> pointData = {
+	//   0.0f,0.0f,3.0f
+	//};
+
+	std::vector<PL::TVertex> pointData0;
+	PL::TVertex p0;
+	p0.Position = glm::vec3(0.3f,1.2f,0.5f);
+	p0.Normal = glm::vec3(0.0f,0.0f,0.0f);
+	pointData0.push_back(p0);
+
+	std::vector<PL::TVertex> pointData1;
+	PL::TVertex p1;
+	p1.Position = glm::vec3(0.3f,1.2f,0.8f);
+	p1.Normal = glm::vec3(0.0f,0.0f,0.0f);
+	pointData1.push_back(p1);
+
+	std::vector<PL::TVertex> circleData;
+
+	std::vector<float> lineData =
+	{
+	   -1.3f,1.3f,-1.0f,
+	   1.3f,1.3f,-1.0f,
 	};
 
-	std::vector<PL::TVertex> lineData;
-	PL::TVertex vertex1;
-	vertex1.Position = glm::vec3(-2.5f, 2.5f, 0.0f);
-	vertex1.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	PL::TVertex vertex2;
-	vertex2.Position = glm::vec3(-2.5f, 4.5f, 0.0f);
-	vertex2.Normal = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	lineData.push_back(vertex1);
-	lineData.push_back(vertex2);
-
-	std::vector<float> lineData1 = {
-		  -2.5f,2.5f,0.0f,
-	      -2.5f,4.5f,0.0f
+	std::vector<float> tr1 = { 
+		-0.5f, -0.5f, -2.0f,
+		 0.5f, -0.5f, -2.0f,
+		 0.0f,  0.5f, -2.0f
 	};
-
-	std::vector<float> lineData2 = {
-		  1.5f,2.5f,0.0f,
-		  1.5f,4.5f,0.0f
+	std::vector<float> tr2 = {
+		-0.5f, -0.5f, -4.0f,
+		 0.5f, -0.5f, -4.0f,
+		 0.0f,  0.5f, -4.0f
 	};
-
-
-	std::vector<float> triangleData = {
-	  -0.5f,-0.5f,-2.0f,
-	   0.5f,-0.5f,-2.0f,
-	   0.0f,0.5f,-2.0f
-	};
-
-   std::vector<float> triangle2Data = {
-	  -0.5f,-0.5f,-4.0f,
-	   0.5f,-0.5f,-4.0f,
-	   0.0f,0.5f,-4.0f
+	std::vector<float> tr3 = {
+		-0.5f, -0.5f, 2.0f,
+		 0.5f, -0.5f, 2.0f,
+		 0.0f,  0.5f, 2.0f
 	};
 
 	std::vector<float> cubeData = {
@@ -109,7 +111,7 @@ int main()
 
 	-0.5f,  0.5f, -0.5f,
 	 0.5f,  0.5f, -0.5f,
-	 0.5f,  0.5f,  0.5f,
+     0.5f,  0.5f,  0.5f,
 	 0.5f,  0.5f,  0.5f,
 	-0.5f,  0.5f,  0.5f,
 	-0.5f,  0.5f, -0.5f
@@ -117,12 +119,15 @@ int main()
 
 	std::string baseDir = "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/";
 
-	//painterScene.addPoint(pointData, baseDir +"point.vs", baseDir + "point.fs",glm::vec3(1.0f,1.0f,0.0f));
-	painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
-	painterScene.addCircle(lineData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));
-	//painterScene.addLine(lineData2, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 0.0f));
- //   painterScene.addTriangle(triangleData, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
- //   painterScene.addTriangle(triangle2Data, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	//painterScene.addPoint(pointData0, baseDir +"point.vs", baseDir + "point.fs",glm::vec3(1.0f,1.0f,0.0f));
+     painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	 painterScene.addCircle(glm::vec3(0.0f,0.2f,-4.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	 painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	 painterScene.addCircle(glm::vec3(0.0f,0.2f,-0.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	 painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	 painterScene.addCircle(glm::vec3(0.0f,0.2f,-2.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+    //painterScene.addTriangle(tr2, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+    //painterScene.addTriangle(tr3, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
 	//painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
 
 #endif

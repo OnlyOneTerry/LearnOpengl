@@ -14,7 +14,7 @@ public:
 	void buildCircleFaceVertices(std::vector<PL::TVertex>& vertices);
 
 private:
-    int   sector_count_ = 72;
+    int   sector_count_ = 16;
     float pier_radius_ = 1.0f;
     float pier_height_ = 0.3f;
 	glm::vec3 pier_origin_ = glm::vec3(0.0f,0.0f,0.0f);//Ô²ÐÄ

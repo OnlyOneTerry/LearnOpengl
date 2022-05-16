@@ -31,11 +31,11 @@ public:
 	//加载opengl函数指针
 	bool  loadOPenglFun();
 	//添加绘制接口
-	void addPoint(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath,glm::vec3 color);
-	void addLine(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addCube(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addTriangle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addCircle(std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath,glm::vec3 color);
+	void addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addCircle(glm::vec3 origin,std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 public:
 	Camera camera_;
 private:

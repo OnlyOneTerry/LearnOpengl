@@ -19,16 +19,16 @@ void GraphicItemCircle::initVAOVBO()
 	glGenBuffers(1, &vbo_);
 
 	glBindVertexArray(vao_);
-	glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(PL::TVertex), &vertices_[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, float_vertices_.size() * sizeof(float), &float_vertices_[0], GL_STATIC_DRAW);
 
 	//位置属性
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	//法线 属性
 	//glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(TVertex),(void*)offsetof(TVertex, TVertex::Normal));
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)(3 * sizeof(float)));
+	//glEnableVertexAttribArray(1);
 
 	//绘制模式
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -107,13 +107,27 @@ void GraphicItemCircle::buildCircleFaceVertices(std::vector<PL::TVertex>& vertic
 		tVertex.Position = position;
 		tVertex.Normal = normal;
 		vertices.push_back(tVertex);
-
+		std::cout<<"1 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
 		tVertex.Position = vctTop[i].Position;
 		vertices.push_back(tVertex);
-
+		std::cout<< "2 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
 		tVertex.Position = vctTop[i + 1].Position;
 		vertices.push_back(tVertex);
+		std::cout<< "3 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
+		
 	}
+	float_vertices_.clear();
+	for (int i = 0; i < vertices.size(); i++)
+	{
+		float_vertices_.push_back(vertices[i].Position.x);
+		float_vertices_.push_back(vertices[i].Position.y);
+		float_vertices_.push_back(vertices[i].Position.z);
+		//float_vertices_.push_back(vertices[i].Normal.x);
+		//float_vertices_.push_back(vertices[i].Normal.y);
+		//float_vertices_.push_back(vertices[i].Normal.z);
+	}
+
+	std::cout << "size is -----------" << vertices.size() << std::endl;
 }
 void GraphicItemCircle::drawCall()
 {
@@ -121,8 +135,9 @@ void GraphicItemCircle::drawCall()
 	shader_->use();
 	//激活要启用的VAO
 	glBindVertexArray(vao_);
-
-	glDrawArrays(GL_TRIANGLES, 0, vertices_.size());
+	int Num = float_vertices_.size()/3;
+	glDrawArrays(GL_TRIANGLES, 0, Num);
+	std::cout << "vao is ------" << vao_ << std::endl;
 }
 
 void GraphicItemCircle::setOrgin(glm::vec3 origin)
