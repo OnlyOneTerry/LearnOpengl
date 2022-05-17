@@ -5,6 +5,7 @@
 #include "GraphicItemCube.h"
 #include "GraphicItemPoint.h"
 #include "GraphicItemCircle.h"
+#include "GraphicItemSphere.h"
 
 PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 10.0f))
 {
@@ -19,9 +20,14 @@ PainterScene::~PainterScene()
 void PainterScene::initScene()
 {
 	//initVAOVBO();
+	//initSphereVAOVBO();
 	//渲染循环
 	while (!glfwWindowShouldClose(window_))
 	{
+		float currentFrame = glfwGetTime();
+		delta_time_ = currentFrame - last_frame_;
+		last_frame_ = currentFrame;
+
 		processInput(window_);
 		glEnable(GL_DEPTH_TEST);
 		//初始化场景背景色
@@ -53,9 +59,23 @@ void PainterScene::initScene()
 #endif 
 
 
+#if 0
+		//绘制球
+		sphereShader.use();
+		sphereShader.setMat4("model", model);
+		sphereShader.setMat4("view", view);
+		sphereShader.setMat4("projection", projection);
+		sphereShader.setVec3("color", glm::vec3(1.0f, 0.0f, 1.0f));
+		glBindVertexArray(sphereVAO);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, X_SEGMENTS * Y_SEGMENTS * 6, GL_UNSIGNED_INT, 0);
+#endif 
+
+
 #if 1
 		for (int i = 0; i < itemVec_.size(); i++)
 		{
+			itemVec_[i]->useShader();
 			itemVec_[i]->setModel("model", model);
 			itemVec_[i]->setView("view", view);
 			itemVec_[i]->setProjection("projection", projection);
@@ -134,6 +154,20 @@ void PainterScene::processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera_.ProcessKeyboard(FORWARD, delta_time_);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera_.ProcessKeyboard(BACKWARD, delta_time_);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera_.ProcessKeyboard(LEFT, delta_time_);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera_.ProcessKeyboard(RIGHT, delta_time_);
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		camera_.resetPosition(0.0f, 0.0f, 10.0f);
 }
 
 void PainterScene::setNear(float nearDis)
@@ -230,17 +264,24 @@ void PainterScene::addCircle(glm::vec3 origin, std::vector<PL::TVertex> vertexDa
 	itemVec_.push_back(circleItem);
 }
 
+void PainterScene::addSphere(glm::vec3 origin, std::string vsPath, std::string fsPath, glm::vec3 color)
+{
+	GraphicItemSphere* sphereItem = new GraphicItemSphere(vsPath, fsPath, color);
+	sphereItem->initVAOVBO();
+	itemVec_.push_back(sphereItem);
+}
+
 
 void PainterScene::initVAOVBO()
 {
-	_pierVertices = getUnitCircleVertices();
+	//_pierVertices = getUnitCircleVertices();
 
-	//buildCylinderVertices(_pierVertices);
+	buildCylinderVertices(_pierVertices);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-
 	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, _pierVertices.size() * sizeof(PL::TVertex), &_pierVertices[0], GL_STATIC_DRAW);
 
 	//位置属性
@@ -318,4 +359,68 @@ void PainterScene::buildCylinderVertices(std::vector<PL::TVertex>& vertices)
 	}
 
 
+}
+
+void PainterScene::generateSphereVertices()
+{
+	/*2-计算球体顶点*/
+//生成球的顶点
+	for (int y = 0; y <= Y_SEGMENTS; y++)
+	{
+		for (int x = 0; x <= X_SEGMENTS; x++)
+		{
+			float xSegment = (float)x / (float)X_SEGMENTS;
+			float ySegment = (float)y / (float)Y_SEGMENTS;
+			float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+			float yPos = std::cos(ySegment * PI);
+			float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+			sphereVertices.push_back(xPos);
+			sphereVertices.push_back(yPos);
+			sphereVertices.push_back(zPos);
+		}
+	}
+}
+
+void PainterScene::generateSphereVerticesIndex()
+{
+	//生成球的Indices
+	for (int i = 0; i < Y_SEGMENTS; i++)
+	{
+		for (int j = 0; j < X_SEGMENTS; j++)
+		{
+			sphereIndices.push_back(i * (X_SEGMENTS + 1) + j);
+			sphereIndices.push_back((i + 1) * (X_SEGMENTS + 1) + j);
+			sphereIndices.push_back((i + 1) * (X_SEGMENTS + 1) + j + 1);
+			sphereIndices.push_back(i* (X_SEGMENTS + 1) + j);
+			sphereIndices.push_back((i + 1) * (X_SEGMENTS + 1) + j + 1);
+			sphereIndices.push_back(i * (X_SEGMENTS + 1) + j + 1);
+		}
+	}
+
+}
+
+void PainterScene::initSphereVAOVBO()
+{
+	generateSphereVertices();
+	generateSphereVerticesIndex();
+	/*3-数据处理*/
+	glGenVertexArrays(1, &sphereVAO);
+	glGenBuffers(1, &sphereVBO);
+	//生成并绑定球体的VAO和VBO
+	glBindVertexArray(sphereVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
+	//将顶点数据绑定至当前默认的缓冲中
+	glBufferData(GL_ARRAY_BUFFER, sphereVertices.size() * sizeof(float), &sphereVertices[0], GL_STATIC_DRAW);
+
+	glGenBuffers(1, &element_buffer_object);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_object);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sphereIndices.size() * sizeof(int), &sphereIndices[0], GL_STATIC_DRAW);
+
+	//设置顶点属性指针
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	//解绑VAO和VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }

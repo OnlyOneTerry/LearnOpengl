@@ -36,6 +36,7 @@ public:
 	void addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addCircle(glm::vec3 origin,std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addSphere(glm::vec3 origin, std::string vsPath, std::string fsPath, glm::vec3 color);
 public:
 	Camera camera_;
 private:
@@ -46,6 +47,8 @@ private:
 	double last_y_ = 0.0f;
 	float  near_ = 0.1f;
 	float  far_ = 200.0f; 
+	float delta_time_ = 0.0f;
+	float last_frame_ = 0.0f;
 	bool is_mouse_pressed_ = false;
 	bool first_mouse_ = false;
 	GLFWwindow* window_ = nullptr;
@@ -53,7 +56,7 @@ private:
 	std::vector<GraphicItemBase*> itemVec_;
 public:
 
-	////////²âÊÔ
+	////////²âÊÔ»­Ô²
 	unsigned int VBO, VAO;
 	void initVAOVBO();
 	const int sectorCount = 72;
@@ -64,5 +67,18 @@ public:
 	std::vector<PL::TVertex> getUnitCircleVertices();
 	void buildCylinderVertices(std::vector<PL::TVertex>& vertices);
 
+	//²âÊÔ»­Çò
+	void generateSphereVertices();
+	void generateSphereVerticesIndex();
+	void initSphereVAOVBO();
+
+	unsigned int sphereVBO, sphereVAO;
+	GLuint element_buffer_object;//EBO
+	const GLfloat PI = 3.14159265358;
+	//½«Çòºá×Ý»®·Ö³É50*50µÄÍø¸ñ
+	const int Y_SEGMENTS = 50;
+	const int X_SEGMENTS = 50;
+	std::vector<float> sphereVertices;
+	std::vector<int> sphereIndices;
 };
 

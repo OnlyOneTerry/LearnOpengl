@@ -17,8 +17,9 @@ void GraphicItemCircle::initVAOVBO()
 
 	glGenVertexArrays(1, &vao_);
 	glGenBuffers(1, &vbo_);
-
+	
 	glBindVertexArray(vao_);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_);
 	glBufferData(GL_ARRAY_BUFFER, float_vertices_.size() * sizeof(float), &float_vertices_[0], GL_STATIC_DRAW);
 
 	//Œª÷√ Ù–‘
@@ -137,7 +138,7 @@ void GraphicItemCircle::drawCall()
 	glBindVertexArray(vao_);
 	int Num = float_vertices_.size()/3;
 	glDrawArrays(GL_TRIANGLES, 0, Num);
-	std::cout << "vao is ------" << vao_ << std::endl;
+	//std::cout << "vao is ------" << vao_ << std::endl;
 }
 
 void GraphicItemCircle::setOrgin(glm::vec3 origin)
