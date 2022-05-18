@@ -10,8 +10,8 @@ public:
 	void drawCall();
 	void setOrgin(glm::vec3 origin);
 	//Ô²ÉÏµÄµã
-	std::vector<PL::TVertex> getUnitCircleVertices();
-	void buildCircleFaceVertices(std::vector<PL::TVertex>& vertices);
+	std::vector<display_utils::TVertex> getUnitCircleVertices();
+	void buildCircleFaceVertices(std::vector<display_utils::TVertex>& vertices);
 
 private:
     int   sector_count_ = 16;

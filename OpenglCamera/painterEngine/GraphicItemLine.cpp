@@ -33,5 +33,5 @@ void GraphicItemLine::drawCall()
 	shader_->use();
 	glBindVertexArray(vao_);
 	glDrawArrays(GL_LINES, 0, 2);
-	std::cout << "vao is ------" << vao_ << std::endl;
+	//std::cout << "vao is ------" << vao_ << std::endl;
 }

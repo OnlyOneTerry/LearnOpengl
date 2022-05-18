@@ -11,12 +11,13 @@ public:
 
 	void initVAOVBO();
 	void drawCall();
-
+	void setOrigin(glm::vec3 origin);
 	void generateSphereVertices();
 	void generateSphereVerticesIndex();
 private:
-	int y_segements_ = 50;
-	int x_segements_ = 50;
+	int y_segements_ = 30;
+	int x_segements_ = 30;
+	glm::vec3 origin_ = {0.0f,0.0f,0.0f};
 
 };
 

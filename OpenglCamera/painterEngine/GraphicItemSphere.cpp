@@ -51,9 +51,26 @@ void GraphicItemSphere::generateSphereVertices()
 			float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
 			float yPos = std::cos(ySegment * PI);
 			float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
-			float_vertices_.push_back(xPos);
-			float_vertices_.push_back(yPos);
-			float_vertices_.push_back(zPos);
+
+			glm::vec4 tempPos;
+			tempPos.x = xPos;
+			tempPos.y = yPos;
+			tempPos.z = zPos;
+			tempPos.w = 1.0f;
+
+			glm::mat4 trans = glm::mat4(1.0f);
+			trans = glm::translate(trans, origin_);
+
+			tempPos = trans * tempPos;
+
+			float_vertices_.push_back(tempPos.x);
+			float_vertices_.push_back(tempPos.y);
+			float_vertices_.push_back(tempPos.z);
+
+			//float_vertices_.push_back(xPos);
+			//float_vertices_.push_back(yPos);
+			//float_vertices_.push_back(zPos);
+			//std::cout << " x is : " << xPos << " y is :" << yPos << " z is :" << zPos << std::endl;
 		}
 	}
 }
@@ -73,4 +90,9 @@ void GraphicItemSphere::generateSphereVerticesIndex()
 			indices_.push_back(i * (x_segements_ + 1) + j + 1);
 		}
 	}
+}
+
+void GraphicItemSphere::setOrigin(glm::vec3 origin)
+{
+	origin_ = origin;
 }

@@ -21,21 +21,22 @@ void PainterScene::initScene()
 {
 	//initVAOVBO();
 	//initSphereVAOVBO();
+	//initHeartVAOVBO();
 	//渲染循环
-	while (!glfwWindowShouldClose(window_))
+	while (!glfwWindowShouldClose(window_ptr))
 	{
 		float currentFrame = glfwGetTime();
 		delta_time_ = currentFrame - last_frame_;
 		last_frame_ = currentFrame;
 
-		processInput(window_);
+		processInput(window_ptr);
 		glEnable(GL_DEPTH_TEST);
 		//初始化场景背景色
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 #if 0
-		Shader circleShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
+		Shader heartShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
 #endif
 
 		//坐标转换
@@ -71,6 +72,20 @@ void PainterScene::initScene()
 		glDrawElements(GL_TRIANGLES, X_SEGMENTS * Y_SEGMENTS * 6, GL_UNSIGNED_INT, 0);
 #endif 
 
+#if 0
+		//绘制球
+		heartShader.use();
+		heartShader.setMat4("model", model);
+		heartShader.setMat4("view", view);
+		heartShader.setMat4("projection", projection);
+		heartShader.setVec3("color", glm::vec3(1.0f, 0.0f, 1.0f));
+		glBindVertexArray(heartVAO);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		int num = hearVertices.size() / 3;
+		glDrawArrays(GL_TRIANGLES, 0,num);
+#endif 
+
+
 
 #if 1
 		for (int i = 0; i < itemVec_.size(); i++)
@@ -83,7 +98,7 @@ void PainterScene::initScene()
 		}
 #endif 
 		//交换渲染缓冲
-		glfwSwapBuffers(window_);
+		glfwSwapBuffers(window_ptr);
 		glfwPollEvents();
 	}
 
@@ -114,9 +129,16 @@ void PainterScene::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	last_x_ = xpos;
 	last_y_ = ypos;
+	if (move_camera_)
+	{
+		camera_.ProcessMouseMovement(xoffset, yoffset);
+	}
+	else
+	{
+		camera_.ProcessMouseRotate(xoffset, yoffset);
 
-	camera_.ProcessMouseRotate(xoffset, yoffset);
-	//camera_.ProcessMouseMovement(xoffset, yoffset);
+	}
+
 }
 void PainterScene::mouse_button_callback(GLFWwindow* window, int button, int action, int modes)
 {
@@ -152,6 +174,15 @@ void PainterScene::scroll_callback(GLFWwindow* window, double xoffset, double yo
 
 void PainterScene::processInput(GLFWwindow* window)
 {
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+	{
+		move_camera_ = true;
+	}
+	else
+	{
+		move_camera_ = false;
+	}
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
@@ -186,14 +217,14 @@ GLFWwindow* PainterScene::initWindow()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 
-#ifdef __APPLE__
+#ifdef __APdisplay_utilsE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	//创建 window
 
 	GLFWwindow* window = nullptr;
 	window = glfwCreateWindow(scr_width_, scr_height_, "LearnOpenGL", NULL, NULL);
-	window_ = window;
+	window_ptr = window;
 	if (window == nullptr)
 	{
 		std::cout << "failed to  create GLFW window" << std::endl;
@@ -207,7 +238,7 @@ GLFWwindow* PainterScene::initWindow()
 }
 GLFWwindow * PainterScene::getWindow()
 {
-	return window_;
+	return window_ptr;
 }
 //加载opengl函数指针
 bool  PainterScene::loadOPenglFun()
@@ -255,7 +286,7 @@ void PainterScene::addTriangle(std::vector<float> vertexData, std::string vsPath
 	itemVec_.push_back(triangleItem);
 }
 
-void PainterScene::addCircle(glm::vec3 origin, std::vector<PL::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addCircle(glm::vec3 origin, std::vector<display_utils::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemCircle* circleItem = new GraphicItemCircle(vsPath, fsPath, color);
 	circleItem->setVertexData(vertexData);
@@ -264,9 +295,10 @@ void PainterScene::addCircle(glm::vec3 origin, std::vector<PL::TVertex> vertexDa
 	itemVec_.push_back(circleItem);
 }
 
-void PainterScene::addSphere(glm::vec3 origin, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addSphere(glm::vec3 center, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemSphere* sphereItem = new GraphicItemSphere(vsPath, fsPath, color);
+	sphereItem->setOrigin(center);
 	sphereItem->initVAOVBO();
 	itemVec_.push_back(sphereItem);
 }
@@ -282,20 +314,20 @@ void PainterScene::initVAOVBO()
 	glGenBuffers(1, &VBO);
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, _pierVertices.size() * sizeof(PL::TVertex), &_pierVertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, _pierVertices.size() * sizeof(display_utils::TVertex), &_pierVertices[0], GL_STATIC_DRAW);
 
 	//位置属性
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(PL::TVertex),(void*)0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,sizeof(display_utils::TVertex),(void*)0);
 	glEnableVertexAttribArray(0);
 
 	//法线 属性
 	//glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(TVertex),(void*)offsetof(TVertex, TVertex::Normal));
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(PL::TVertex),(void*)(3*sizeof(float)));
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(display_utils::TVertex),(void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
 	glBindVertexArray(0);
 }
 
-std::vector<PL::TVertex> PainterScene::getUnitCircleVertices()
+std::vector<display_utils::TVertex> PainterScene::getUnitCircleVertices()
 {
 	const float PI = 3.1415926f;
 	float sectorStep = 2 * PI / sectorCount;
@@ -303,9 +335,9 @@ std::vector<PL::TVertex> PainterScene::getUnitCircleVertices()
 
 	glm::vec3 position;
 	glm::vec3 normal;
-	PL::TVertex tVertex;
+	display_utils::TVertex tVertex;
 
-	std::vector<PL::TVertex> unitCircleVertices;
+	std::vector<display_utils::TVertex> unitCircleVertices;
 	for (int i = 0;i<= sectorCount;i++)
 	{
 		sectorAngle = i * sectorStep;
@@ -324,15 +356,15 @@ std::vector<PL::TVertex> PainterScene::getUnitCircleVertices()
 	return unitCircleVertices;
 }
 
-void PainterScene::buildCylinderVertices(std::vector<PL::TVertex>& vertices)
+void PainterScene::buildCylinderVertices(std::vector<display_utils::TVertex>& vertices)
 {
-	std::vector<PL::TVertex> unitVertices = getUnitCircleVertices();
+	std::vector<display_utils::TVertex> unitVertices = getUnitCircleVertices();
 
 	// 获取上、下圆周点数组
-	std::vector<PL::TVertex> vctTop;
-	std::vector<PL::TVertex> vctBot;
+	std::vector<display_utils::TVertex> vctTop;
+	std::vector<display_utils::TVertex> vctBot;
 
-	PL::TVertex tVertex;
+	display_utils::TVertex tVertex;
 	for (int i = 0; i < unitVertices.size(); ++i)
 	{
 		tVertex.Position = unitVertices[i].Position;
@@ -423,4 +455,52 @@ void PainterScene::initSphereVAOVBO()
 	//解绑VAO和VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+void PainterScene::initHeartVAOVBO()
+{
+	//generateHeartVertices();
+
+	glGenVertexArrays(1, &heartVAO);
+	glGenBuffers(1, &heartVBO);
+
+	glBindVertexArray(heartVAO);
+	glBindBuffer(GL_ARRAY_BUFFER,heartVBO);
+	glBufferData(GL_ARRAY_BUFFER, hearVertices.size() * sizeof(float), &hearVertices[0], GL_STATIC_DRAW);
+
+	//设置顶点属性指针
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
+	glEnableVertexAttribArray(0);
+
+}
+
+void PainterScene::generateHeartVertices()
+{
+	int X = 50, Y = 50;
+	int R = 40;
+	double x, y;
+	double x1, y1, y2;
+	double PI = 3.1415926;
+
+	for (x = -360; x <= 360; x++) {
+		x1 = x / 360.0;
+		y1 = 360 * (pow(x1, 1.5) + pow(1 - x1 * x1, 0.5));
+		y2 = 360 * (pow(x1, 1.5) - pow(1 - x1 * x1, 0.5));
+
+		hearVertices.push_back(X + x / 18);
+		hearVertices.push_back(Y + y1 / 9);
+		hearVertices.push_back(20);
+		hearVertices.push_back(X + x / 18);
+		hearVertices.push_back(Y + y2 / 9);
+		hearVertices.push_back(20);
+		hearVertices.push_back(X - x / 18);
+		hearVertices.push_back(X - x / 18);
+		hearVertices.push_back(Y + y1 / 9);
+		hearVertices.push_back(20);
+		hearVertices.push_back(X - x / 18);
+		hearVertices.push_back(Y + y2 / 9);
+		hearVertices.push_back(20);
+
+	}
+
 }

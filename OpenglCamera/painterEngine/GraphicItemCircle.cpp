@@ -28,14 +28,14 @@ void GraphicItemCircle::initVAOVBO()
 
 	//法线 属性
 	//glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,sizeof(TVertex),(void*)offsetof(TVertex, TVertex::Normal));
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PL::TVertex), (void*)(3 * sizeof(float)));
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(display_utils::TVertex), (void*)(3 * sizeof(float)));
 	//glEnableVertexAttribArray(1);
 
 	//绘制模式
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
-std::vector<PL::TVertex> GraphicItemCircle::getUnitCircleVertices()
+std::vector<display_utils::TVertex> GraphicItemCircle::getUnitCircleVertices()
 {
 	const float PI = 3.1415926f;
 	float sectorStep = 2 * PI / sector_count_;
@@ -43,9 +43,9 @@ std::vector<PL::TVertex> GraphicItemCircle::getUnitCircleVertices()
 
 	glm::vec3 position;
 	glm::vec3 normal;
-	PL::TVertex tVertex;
+	display_utils::TVertex tVertex;
 
-	std::vector<PL::TVertex> unitCircleVertices;
+	std::vector<display_utils::TVertex> unitCircleVertices;
 	for (int i = 0; i <= sector_count_; i++)
 	{
 		sectorAngle = i * sectorStep;
@@ -75,14 +75,14 @@ std::vector<PL::TVertex> GraphicItemCircle::getUnitCircleVertices()
 	}
 	return unitCircleVertices;
 }
-void GraphicItemCircle::buildCircleFaceVertices(std::vector<PL::TVertex>& vertices)
+void GraphicItemCircle::buildCircleFaceVertices(std::vector<display_utils::TVertex>& vertices)
 {
 	vertices_.clear();
-	std::vector<PL::TVertex> unitVertices = getUnitCircleVertices();
+	std::vector<display_utils::TVertex> unitVertices = getUnitCircleVertices();
 	// 获取圆周点数组
-	std::vector<PL::TVertex> vctTop;
+	std::vector<display_utils::TVertex> vctTop;
 
-	PL::TVertex tVertex;
+	display_utils::TVertex tVertex;
 	for (int i = 0; i < unitVertices.size(); ++i)
 	{
 		tVertex.Position = unitVertices[i].Position;
@@ -108,13 +108,13 @@ void GraphicItemCircle::buildCircleFaceVertices(std::vector<PL::TVertex>& vertic
 		tVertex.Position = position;
 		tVertex.Normal = normal;
 		vertices.push_back(tVertex);
-		std::cout<<"1 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
+		//std::cout<<"1 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
 		tVertex.Position = vctTop[i].Position;
 		vertices.push_back(tVertex);
-		std::cout<< "2 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
+		//std::cout<< "2 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
 		tVertex.Position = vctTop[i + 1].Position;
 		vertices.push_back(tVertex);
-		std::cout<< "3 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
+		//std::cout<< "3 -------" <<"x is : " << tVertex.Position.x << "y is : " << tVertex.Position.y << "z is: " << tVertex.Position.z << std::endl;
 		
 	}
 	float_vertices_.clear();
@@ -128,7 +128,7 @@ void GraphicItemCircle::buildCircleFaceVertices(std::vector<PL::TVertex>& vertic
 		//float_vertices_.push_back(vertices[i].Normal.z);
 	}
 
-	std::cout << "size is -----------" << vertices.size() << std::endl;
+	//std::cout << "size is -----------" << vertices.size() << std::endl;
 }
 void GraphicItemCircle::drawCall()
 {

@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependence\includes;$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependence\lib\</AdditionalLibraryDirectories>
@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependence\includes;$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)Dependence\lib\</AdditionalLibraryDirectories>
@@ -104,7 +104,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependence\includes;$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -121,7 +121,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependence\includes;$(SolutionDir)OpenglCamera\imgui;$(SolutionDir)Dependence\includes\GLFW</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="painterEngine\GraphicItemSphere.cpp" />
     <ClCompile Include="painterEngine\GraphicItemCircle.cpp" />
     <ClCompile Include="painterEngine\GraphicItemPoint.cpp" />
     <ClCompile Include="painterEngine\GraphicItemCube.cpp" />
@@ -152,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\commonDef.h" />
+    <ClInclude Include="painterEngine\GraphicItemSphere.h" />
     <ClInclude Include="painterEngine\GraphicItemCircle.h" />
     <ClInclude Include="painterEngine\GraphicItemPoint.h" />
     <ClInclude Include="painterEngine\GraphicItemCube.h" />
@@ -170,6 +172,8 @@
     <ClInclude Include="painterEngine\PainterScene.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\ball.fs" />
+    <None Include="shaders\ball.vs" />
     <None Include="shaders\circle.fs" />
     <None Include="shaders\circle.vs" />
     <None Include="shaders\cube.fs" />

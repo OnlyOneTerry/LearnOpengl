@@ -31,5 +31,6 @@ void GraphicItemPoint::drawCall()
 	//std::cout << "draw Point......" << vao_ << std::endl;
 	shader_->use();
 	glBindVertexArray(vao_);
-	glDrawArrays(GL_POINTS, 0, 3);
+	glPointSize(5);
+	glDrawArrays(GL_POINTS, 0, 1);
 }

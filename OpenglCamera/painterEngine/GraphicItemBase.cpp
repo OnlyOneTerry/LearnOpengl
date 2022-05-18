@@ -16,7 +16,7 @@ GraphicItemBase::~GraphicItemBase()
 }
 
 
-void GraphicItemBase::setVertexData(std::vector<PL::TVertex>& vertexs)
+void GraphicItemBase::setVertexData(std::vector<display_utils::TVertex>& vertexs)
 {
 	vertices_ = vertexs;
 }
@@ -24,6 +24,14 @@ void GraphicItemBase::setVertexData(std::vector<PL::TVertex>& vertexs)
 void GraphicItemBase::setVertexData(std::vector<float>& vertexs)
 {
 	float_vertices_ = vertexs;
+}
+
+void GraphicItemBase::useShader()
+{
+	if (shader_)
+	{
+		shader_->use();
+	}
 }
 
 void GraphicItemBase::setModel(std::string name, glm::mat4 model)
