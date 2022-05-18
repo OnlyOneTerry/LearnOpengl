@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="painterEngine\GraphicItemBezier.cpp" />
     <ClCompile Include="painterEngine\GraphicItemSphere.cpp" />
     <ClCompile Include="painterEngine\GraphicItemCircle.cpp" />
     <ClCompile Include="painterEngine\GraphicItemPoint.cpp" />
@@ -153,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\commonDef.h" />
+    <ClInclude Include="painterEngine\GraphicItemBezier.h" />
     <ClInclude Include="painterEngine\GraphicItemSphere.h" />
     <ClInclude Include="painterEngine\GraphicItemCircle.h" />
     <ClInclude Include="painterEngine\GraphicItemPoint.h" />
