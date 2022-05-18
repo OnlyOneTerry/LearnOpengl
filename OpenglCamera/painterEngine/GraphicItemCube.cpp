@@ -1,6 +1,6 @@
 #include "GraphicItemCube.h"
 
-GraphicItemCube::GraphicItemCube(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemCube::GraphicItemCube(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath, fragmentPath,color)
 {
 

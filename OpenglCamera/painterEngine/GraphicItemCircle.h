@@ -4,7 +4,7 @@
 class GraphicItemCircle :public GraphicItemBase
 {
 public:
-	GraphicItemCircle(std::string vertexPath, std::string fragmentPath, glm::vec3 color = glm::vec3(1.0f, 0.5f, 0.2f));
+	GraphicItemCircle(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color = glm::vec3(1.0f, 0.5f, 0.2f));
 	~GraphicItemCircle();
 	void initVAOVBO();
 	void drawCall();

@@ -1,6 +1,6 @@
 #include "GraphicItemPoint.h"
 
-GraphicItemPoint::GraphicItemPoint(std::string vertexPath, std::string fragmentPath,glm::vec3 color)
+GraphicItemPoint::GraphicItemPoint(std::string& vertexPath, std::string& fragmentPath,glm::vec3 color)
 	:GraphicItemBase(vertexPath,fragmentPath,color)
 {
 

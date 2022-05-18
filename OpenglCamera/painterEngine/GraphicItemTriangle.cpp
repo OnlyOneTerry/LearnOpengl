@@ -1,6 +1,6 @@
 #include "GraphicItemTriangle.h"
 
-GraphicItemTriangle::GraphicItemTriangle(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemTriangle::GraphicItemTriangle(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath, fragmentPath, color)
 {
 

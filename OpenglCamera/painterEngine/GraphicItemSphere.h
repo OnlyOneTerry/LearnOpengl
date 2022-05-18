@@ -6,7 +6,7 @@
 class GraphicItemSphere :public GraphicItemBase
 {
 public:
-	GraphicItemSphere(std::string vertexPath, std::string fragmentPath, glm::vec3 color = glm::vec3(1.0f, 1.0f, 0.0f));
+	GraphicItemSphere(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color = glm::vec3(1.0f, 1.0f, 0.0f));
 	~GraphicItemSphere();
 
 	void initVAOVBO();

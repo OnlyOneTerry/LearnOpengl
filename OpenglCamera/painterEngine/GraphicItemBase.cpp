@@ -1,7 +1,7 @@
 #include "GraphicItemBase.h"
 
 
-GraphicItemBase::GraphicItemBase(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemBase::GraphicItemBase(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 {
 	shader_ = new Shader(vertexPath.c_str(), fragmentPath.c_str());
 	shader_->use();

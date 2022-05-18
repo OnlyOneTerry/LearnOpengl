@@ -9,7 +9,7 @@
 class GraphicItemBase
 {
 public:
-	GraphicItemBase(std::string vertexPath, std::string fragmentPath, glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f));
+	GraphicItemBase(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color = glm::vec3(1.0f,1.0f,1.0f));
 	virtual ~GraphicItemBase();
 	void setVertexData(std::vector<display_utils::TVertex>& vertexs);
 	void setVertexData(std::vector<float>& vertexs);

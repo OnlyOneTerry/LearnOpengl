@@ -1,6 +1,6 @@
 #include "GraphicItemLine.h"
 
-GraphicItemLine::GraphicItemLine(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemLine::GraphicItemLine(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath, fragmentPath,color)
 {
 
@@ -29,9 +29,9 @@ void GraphicItemLine::initVAOVBO()
 
 void GraphicItemLine::drawCall()
 {
-	//std::cout << "draw Line......" << vao_ << std::endl;
 	shader_->use();
 	glBindVertexArray(vao_);
-	glDrawArrays(GL_LINES, 0, 2);
+	int num = float_vertices_.size() / 3;
+	glDrawArrays(GL_LINE_LOOP, 0, num);
 	//std::cout << "vao is ------" << vao_ << std::endl;
 }

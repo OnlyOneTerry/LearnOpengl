@@ -1,6 +1,6 @@
 #include "GraphicItemCircle.h"
 
-GraphicItemCircle::GraphicItemCircle(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemCircle::GraphicItemCircle(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath, fragmentPath, color)
 {
 

@@ -1,6 +1,6 @@
 #include "GraphicItemSphere.h"
  float PI = 3.14159;
-GraphicItemSphere::GraphicItemSphere(std::string vertexPath, std::string fragmentPath, glm::vec3 color)
+GraphicItemSphere::GraphicItemSphere(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath, fragmentPath, color)
 {
 

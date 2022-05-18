@@ -31,11 +31,11 @@ public:
 	//加载opengl函数指针
 	bool  loadOPenglFun();
 	//添加绘制接口
-	void addPoint(std::vector<float> vertexData, std::string vsPath, std::string fsPath,glm::vec3 color);
-	void addLine(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addCube(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addTriangle(std::vector<float> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addCircle(glm::vec3 origin,std::vector<display_utils::TVertex> vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addPoint(std::vector<float>& vertexData, std::string vsPath, std::string fsPath,glm::vec3 color);
+	void addLine(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addCube(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addTriangle(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addCircle(glm::vec3 origin,std::vector<display_utils::TVertex>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addSphere(glm::vec3 center, std::string vsPath, std::string fsPath, glm::vec3 color);
 public:
 	Camera camera_;
@@ -57,58 +57,116 @@ private:
 	std::vector<GraphicItemBase*> itemVec_;
 public:
 
-	////////测试画圆
-	unsigned int VBO, VAO;
-	void initVAOVBO();
-	const int sectorCount = 72;
-	const float pierRadius = 1.0f;
-	const float pierHeight = 5.0f;
-	std::vector<display_utils::TVertex> _pierVertices;
-	//圆上的点
-	std::vector<display_utils::TVertex> getUnitCircleVertices();
-	void buildCylinderVertices(std::vector<display_utils::TVertex>& vertices);
+	//测试画三次贝塞尔曲线
+#include <cstdio>
 
-	//测试画球
-	void generateSphereVertices();
-	void generateSphereVerticesIndex();
-	void initSphereVAOVBO();
+	struct point
+	{
+		float x;
+		float y;
+	};
+	std::vector<float> beizerVertices_;
+	std::vector<point> bezierPoints_;
+	// simple linear interpolation between two points
+	void lerp(point& dest, const point& a, const point& b, const float t)
+	{
+		dest.x = a.x + (b.x - a.x)*t;
+		dest.y = a.y + (b.y - a.y)*t;
+	}
+	void initBeizerVAOVBO();
 
-	unsigned int sphereVBO, sphereVAO;
-	GLuint element_buffer_object;//EBO
-	const GLfloat PI = 3.14159265358;
-	//将球横纵划分成50*50的网格
-	const int Y_SEGMENTS = 50;
-	const int X_SEGMENTS = 50;
-	std::vector<float> sphereVertices;
-	std::vector<int> sphereIndices;
+	unsigned int beizerVAO;
+	unsigned int beizerVBO;
+	// evaluate a point on a bezier-curve. t goes from 0 to 1.0
+	void bezier(point &dest, const point& a, const point& b, const point& c, const point& d, const float t)
+	{
+		point ab, bc, cd, abbc, bccd;
+		lerp(ab, a, b, t);           // point between a and b (green)
+		lerp(bc, b, c, t);           // point between b and c (green)
+		lerp(cd, c, d, t);           // point between c and d (green)
+		lerp(abbc, ab, bc, t);       // point between ab and bc (blue)
+		lerp(bccd, bc, cd, t);       // point between bc and cd (blue)
+		lerp(dest, abbc, bccd, t);   // point on the bezier-curve (black)
+	}
 
-	//测试画心
+	// small test program.. just prints the points
+	int genearteBezier()
+	{
+		// 4 points define the bezier-curve. These are the points used
+		// for the example-images on this page.
+		point a = { -2, 0 };
+		point b = { -2, 2 };
+		point c = { 2, 2 };
+		point d = { 3, -2 };
+
+		for (int i = 0; i < 100; ++i)
+		{
+			point p;
+			float t = static_cast<float>(i) / 99.0;
+			bezier(p, a, b, c, d, t);
+			printf("%f %f\n", p.x, p.y);
+			bezierPoints_.push_back(p);
+
+		}
+
+		for (int i = 0; i < bezierPoints_.size(); i++)
+		{
+			point p = bezierPoints_[i];
+
+			beizerVertices_.push_back(p.x);
+			beizerVertices_.push_back(p.y);
+			beizerVertices_.push_back(-1.0f);
+
+			if (i < bezierPoints_.size()-1)
+			{
+				point pNext = bezierPoints_[i + 1];
+				beizerVertices_.push_back(pNext.x);
+				beizerVertices_.push_back(pNext.y);
+				beizerVertices_.push_back(-1.0f);
+			}
+
+		}
+
+		return 0;
+	}
+
+	//绘制心型
+	unsigned int heartVAO, heartVBO;
 	void initHeartVAOVBO();
-	void generateHeartVertices();
+
+	std::vector<float> heartVertices = {
+		0.0f,5.1f,0.0f,
+		1.0f,5.6f,0.0f,
+		2.0f,6.0f,0.0f,
+		3.0f,6.3f,0.0f,
+		4.0f,6.3f,0.0f,
+		5.0f,6.9f,0.0f,
+
+		0.0f,-5.1f,0.0f,
+		1.0f,-4.4f,0.0f,
+		2.0f,-3.6f,0.0f,
+		3.0f,-2.7f,0.0f,
+		4.0f,-1.5f,0.0f,
+		5.0f,-0.8f,0.0f,
+
+		-1.0f,5.6f,0.0f,
+		-2.0f,6.0f,0.0f,
+		-3.0f,6.3f,0.0f,
+		-4.0f,6.3f,0.0f,
+		-5.0f,6.9f,0.0f,
+
+		-1.0f,-4.4f,0.0f,
+		-2.0f,-3.6f,0.0f,
+		-3.0f,-2.7f,0.0f,
+		-4.0f,-1.5f,0.0f,
+		-5.0f,-0.8f,0.0f,
+
+		 2.6f,6.0f,0.0f,
+		 1.0f,6.0f,0.0f,
+		 -1.0f,6.0f,0.0f,
+		 -2.6f,6.0f,0.0f
+
 	
-	unsigned int heartVAO;
-	unsigned int heartVBO;
-	std::vector<float> hearVertices = {
-	    -1.26, 0, 0.26,
-		-1.44, 0, -0.11,
-		0.12, 0, -1.55,
-		1.12, 0, -0.45,
-		0.65, 0, 0.03,
-		0.9, 0, 1.41,
-		-0.85, 0, 0.69,
-		-1.67, 0, -0.0,
-		-0.39, 0, -1.2,
-		1.17, 0, -0.95,
-		0.5, 0, 0.0,
-		1.17, 0, 0.95,
-		-0.39, 0, 1.2,
-		-1.67, 0, 0.0,
-		-0.85, 0, -0.69,
-		0.9, 0, -1.41,
-		0.65, 0, -0.03,
-		1.12, 0, 0.45,
-		0.12, 0, 1.55,
-	   -1.44, 0, 0.11
 	};
 
 };
