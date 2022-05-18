@@ -37,6 +37,7 @@ public:
 	void addTriangle(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addCircle(glm::vec3 origin,std::vector<display_utils::TVertex>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addSphere(glm::vec3 center, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color);
 public:
 	Camera camera_;
 private:
@@ -95,8 +96,8 @@ public:
 		// 4 points define the bezier-curve. These are the points used
 		// for the example-images on this page.
 		point a = { -2, 0 };
-		point b = { -2, 2 };
-		point c = { 2, 2 };
+		point b = { -2, 3 };
+		point c = { 2,  2 };
 		point d = { 3, -2 };
 
 		for (int i = 0; i < 100; ++i)
@@ -124,7 +125,6 @@ public:
 				beizerVertices_.push_back(pNext.y);
 				beizerVertices_.push_back(-1.0f);
 			}
-
 		}
 
 		return 0;
@@ -164,8 +164,33 @@ public:
 		 2.6f,6.0f,0.0f,
 		 1.0f,6.0f,0.0f,
 		 -1.0f,6.0f,0.0f,
-		 -2.6f,6.0f,0.0f
+		 -2.6f,6.0f,0.0f,
 
+		5.1f, 0.0f,0.0f,
+		5.6f, 1.0f,0.0f,
+		6.0f, 2.0f,0.0f,
+		6.3f, 3.0f,0.0f,
+		6.3f, 4.0f,0.0f,
+		6.9f, 5.0f,0.0f,
+
+	   -5.1f, 0.0f,0.0f,
+	   -4.4f, 1.0f,0.0f,
+	   -3.6f, 2.0f,0.0f,
+	   -2.7f, 3.0f,0.0f,
+	   -1.5f, 4.0f,0.0f,
+	   -0.8f, 5.0f,0.0f,
+
+		5.6f,-1.0f,0.0f,
+		6.0f,-2.0f,0.0f,
+		6.3f,-3.0f,0.0f,
+		6.3f,-4.0f,0.0f,
+		6.9f,-5.0f,0.0f,
+
+	   -4.4f,-1.0f,0.0f,
+	   -3.6f,-2.0f,0.0f,
+	   -2.7f,-3.0f,0.0f,
+	   -1.5f,-4.0f,0.0f,
+	   -0.8f,-5.0f,0.0f,
 	
 	};
 

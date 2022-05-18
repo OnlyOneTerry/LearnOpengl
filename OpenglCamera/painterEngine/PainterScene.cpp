@@ -6,6 +6,7 @@
 #include "GraphicItemPoint.h"
 #include "GraphicItemCircle.h"
 #include "GraphicItemSphere.h"
+#include "GraphicItemBezier.h"
 
 PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 10.0f))
 {
@@ -19,7 +20,7 @@ PainterScene::~PainterScene()
 
 void PainterScene::initScene()
 {
-	initBeizerVAOVBO();
+	//initBeizerVAOVBO();
 	//initHeartVAOVBO();
 	//äÖÈ¾Ñ­»·
 	while (!glfwWindowShouldClose(window_ptr))
@@ -34,7 +35,7 @@ void PainterScene::initScene()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-#if 1
+#if 0
 		Shader beizerShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
 #endif
 
@@ -61,8 +62,7 @@ void PainterScene::initScene()
 
 
 
-
-#if 1
+#if 0
 		//»æÖÆ±´Èû¶û
 		beizerShader.use();
 		beizerShader.setMat4("model", model);
@@ -292,6 +292,14 @@ void PainterScene::addSphere(glm::vec3 center, std::string vsPath, std::string f
 	sphereItem->setOrigin(center);
 	sphereItem->initVAOVBO();
 	itemVec_.push_back(sphereItem);
+}
+
+void PainterScene::addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color)
+{
+	GraphicItemBezier* bezierItem = new GraphicItemBezier(vsPath, fsPath, color);
+	bezierItem->setControlPoints(controlPoints);
+	bezierItem->initVAOVBO();
+	itemVec_.push_back(bezierItem);
 }
 
 
