@@ -130,6 +130,14 @@ void GraphicItemCircle::buildCircleFaceVertices(std::vector<display_utils::TVert
 
 	//std::cout << "size is -----------" << vertices.size() << std::endl;
 }
+void GraphicItemCircle::setSectorCount(int count)
+{
+	sector_count_ = count;
+}
+void GraphicItemCircle::setRadius(float radius)
+{
+	pier_radius_ = radius;
+}
 void GraphicItemCircle::drawCall()
 {
 	//¼¤»îshader

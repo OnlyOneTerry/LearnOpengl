@@ -12,7 +12,8 @@ public:
 	//Ô²ÉÏµÄµã
 	std::vector<display_utils::TVertex> getUnitCircleVertices();
 	void buildCircleFaceVertices(std::vector<display_utils::TVertex>& vertices);
-
+	void setSectorCount(int count);
+	void setRadius(float radius);
 private:
     int   sector_count_ = 16;
     float pier_radius_ = 1.0f;

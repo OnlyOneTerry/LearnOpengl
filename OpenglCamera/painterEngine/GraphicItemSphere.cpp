@@ -63,14 +63,10 @@ void GraphicItemSphere::generateSphereVertices()
 
 			tempPos = trans * tempPos;
 
-			float_vertices_.push_back(tempPos.x);
-			float_vertices_.push_back(tempPos.y);
-			float_vertices_.push_back(tempPos.z);
+			float_vertices_.push_back(tempPos.x*radius_);
+			float_vertices_.push_back(tempPos.y*radius_);
+			float_vertices_.push_back(tempPos.z*radius_);
 
-			//float_vertices_.push_back(xPos);
-			//float_vertices_.push_back(yPos);
-			//float_vertices_.push_back(zPos);
-			//std::cout << " x is : " << xPos << " y is :" << yPos << " z is :" << zPos << std::endl;
 		}
 	}
 }
@@ -90,6 +86,11 @@ void GraphicItemSphere::generateSphereVerticesIndex()
 			indices_.push_back(i * (x_segements_ + 1) + j + 1);
 		}
 	}
+}
+
+void GraphicItemSphere::setRadius(float radius)
+{
+	radius_ = radius;
 }
 
 void GraphicItemSphere::setOrigin(glm::vec3 origin)

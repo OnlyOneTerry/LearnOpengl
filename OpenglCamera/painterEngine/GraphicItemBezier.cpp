@@ -1,4 +1,5 @@
 #include "GraphicItemBezier.h"
+#include <GLFW/glfw3.h>
 
 GraphicItemBezier::GraphicItemBezier(std::string& vertexPath, std::string& fragmentPath, glm::vec3 color)
 	:GraphicItemBase(vertexPath,fragmentPath,color)
@@ -37,9 +38,13 @@ void GraphicItemBezier::initVAOVBO()
 
 void GraphicItemBezier::drawCall()
 {
+    glm::vec3 color = glm::vec3(sin(glfwGetTime()),cos(glfwGetTime()),1.0f);
+	shader_->setVec3("color", color);
 	glBindVertexArray(vao_);
 	int num = float_vertices_.size() / 3;
-	glDrawArrays(GL_LINES, 0, num);
+	glPointSize(3);
+	//glDrawArrays(GL_LINES, 0, num);
+	glDrawArrays(GL_POINTS, 0, num);
 }
 
 void GraphicItemBezier::bezier(display_utils::Point2 &dest, const display_utils::Point2& a, const display_utils::Point2& b, const display_utils::Point2& c, const display_utils::Point2& d, const float t)

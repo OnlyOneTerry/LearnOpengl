@@ -21,7 +21,6 @@ PainterScene::~PainterScene()
 void PainterScene::initScene()
 {
 	//initBeizerVAOVBO();
-	//initHeartVAOVBO();
 	//渲染循环
 	while (!glfwWindowShouldClose(window_ptr))
 	{
@@ -47,21 +46,6 @@ void PainterScene::initScene()
 		view = camera_.GetViewMatrix();
 		projection = glm::perspective(glm::radians(camera_.Zoom), (float)scr_width_ / scr_height_, near_, far_);
 		
-#if 0
-		//绘制心型
-		heartShader.use();
-		heartShader.setMat4("model", model);
-		heartShader.setMat4("view", view);
-		heartShader.setMat4("projection", projection);
-		heartShader.setVec3("color", glm::vec3(1.0f,0.0f,1.0f));
-		glBindVertexArray(heartVAO);
-		glPointSize(5);
-		int num = heartVertices.size() / 3;
-		glDrawArrays(GL_POINTS, 0, num);
-#endif 
-
-
-
 #if 0
 		//绘制贝塞尔
 		beizerShader.use();
@@ -277,19 +261,21 @@ void PainterScene::addTriangle(std::vector<float>& vertexData, std::string vsPat
 	itemVec_.push_back(triangleItem);
 }
 
-void PainterScene::addCircle(glm::vec3 origin, std::vector<display_utils::TVertex>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addCircle(glm::vec3 center, float r, int sectorCount, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemCircle* circleItem = new GraphicItemCircle(vsPath, fsPath, color);
-	circleItem->setVertexData(vertexData);
-	circleItem->setOrgin(origin);
+	circleItem->setRadius(r);
+	circleItem->setSectorCount(sectorCount);
+	circleItem->setOrgin(center);
 	circleItem->initVAOVBO();
 	itemVec_.push_back(circleItem);
 }
 
-void PainterScene::addSphere(glm::vec3 center, std::string vsPath, std::string fsPath, glm::vec3 color)
+void PainterScene::addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color)
 {
 	GraphicItemSphere* sphereItem = new GraphicItemSphere(vsPath, fsPath, color);
 	sphereItem->setOrigin(center);
+	sphereItem->setRadius(r);
 	sphereItem->initVAOVBO();
 	itemVec_.push_back(sphereItem);
 }
@@ -322,17 +308,3 @@ void PainterScene::initBeizerVAOVBO()
 
 }
 
-void PainterScene::initHeartVAOVBO()
-{
-	glGenVertexArrays(1, &heartVAO);
-	glGenBuffers(1, &heartVBO);
-
-	glBindVertexArray(heartVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, heartVBO);
-
-	glBufferData(GL_ARRAY_BUFFER, heartVertices.size() * sizeof(float), &heartVertices[0], GL_STATIC_DRAW);
-
-	//设置顶点属性指针
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-}

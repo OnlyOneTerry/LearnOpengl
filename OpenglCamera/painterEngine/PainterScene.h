@@ -35,8 +35,8 @@ public:
 	void addLine(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addCube(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addTriangle(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addCircle(glm::vec3 origin,std::vector<display_utils::TVertex>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addSphere(glm::vec3 center, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addCircle(glm::vec3 center,float r,int sectorCount, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color);
 public:
 	Camera camera_;
@@ -130,69 +130,6 @@ public:
 		return 0;
 	}
 
-	//»æÖÆÐÄÐÍ
-	unsigned int heartVAO, heartVBO;
-	void initHeartVAOVBO();
-
-	std::vector<float> heartVertices = {
-		0.0f,5.1f,0.0f,
-		1.0f,5.6f,0.0f,
-		2.0f,6.0f,0.0f,
-		3.0f,6.3f,0.0f,
-		4.0f,6.3f,0.0f,
-		5.0f,6.9f,0.0f,
-
-		0.0f,-5.1f,0.0f,
-		1.0f,-4.4f,0.0f,
-		2.0f,-3.6f,0.0f,
-		3.0f,-2.7f,0.0f,
-		4.0f,-1.5f,0.0f,
-		5.0f,-0.8f,0.0f,
-
-		-1.0f,5.6f,0.0f,
-		-2.0f,6.0f,0.0f,
-		-3.0f,6.3f,0.0f,
-		-4.0f,6.3f,0.0f,
-		-5.0f,6.9f,0.0f,
-
-		-1.0f,-4.4f,0.0f,
-		-2.0f,-3.6f,0.0f,
-		-3.0f,-2.7f,0.0f,
-		-4.0f,-1.5f,0.0f,
-		-5.0f,-0.8f,0.0f,
-
-		 2.6f,6.0f,0.0f,
-		 1.0f,6.0f,0.0f,
-		 -1.0f,6.0f,0.0f,
-		 -2.6f,6.0f,0.0f,
-
-		5.1f, 0.0f,0.0f,
-		5.6f, 1.0f,0.0f,
-		6.0f, 2.0f,0.0f,
-		6.3f, 3.0f,0.0f,
-		6.3f, 4.0f,0.0f,
-		6.9f, 5.0f,0.0f,
-
-	   -5.1f, 0.0f,0.0f,
-	   -4.4f, 1.0f,0.0f,
-	   -3.6f, 2.0f,0.0f,
-	   -2.7f, 3.0f,0.0f,
-	   -1.5f, 4.0f,0.0f,
-	   -0.8f, 5.0f,0.0f,
-
-		5.6f,-1.0f,0.0f,
-		6.0f,-2.0f,0.0f,
-		6.3f,-3.0f,0.0f,
-		6.3f,-4.0f,0.0f,
-		6.9f,-5.0f,0.0f,
-
-	   -4.4f,-1.0f,0.0f,
-	   -3.6f,-2.0f,0.0f,
-	   -2.7f,-3.0f,0.0f,
-	   -1.5f,-4.0f,0.0f,
-	   -0.8f,-5.0f,0.0f,
-	
-	};
 
 };
 
