@@ -21,6 +21,7 @@ PainterScene::~PainterScene()
 void PainterScene::initScene()
 {
 	//initBeizerVAOVBO();
+	initStlVAOVBO();
 	//渲染循环
 	while (!glfwWindowShouldClose(window_ptr))
 	{
@@ -34,8 +35,8 @@ void PainterScene::initScene()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-#if 0
-		Shader beizerShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
+#if 1
+		Shader stlShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
 #endif
 
 		//坐标转换
@@ -60,9 +61,22 @@ void PainterScene::initScene()
 		glDrawArrays(GL_LINES, 0,num);
 #endif 
 
-
-
 #if 1
+		//绘制stl
+		stlShader.use();
+		stlShader.setMat4("model", model);
+		stlShader.setMat4("view", view);
+		stlShader.setMat4("projection", projection);
+		stlShader.setVec3("color", glm::vec3(1.0f, 0.0f, 1.0f));
+		glBindVertexArray(stlVAO);
+		glPointSize(5);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		int num = stlVertiecs.size() / 3;
+		glDrawArrays(GL_TRIANGLES, 0, num);
+#endif 
+
+#if 0
 		for (int i = 0; i < itemVec_.size(); i++)
 		{
 			itemVec_[i]->useShader();
@@ -308,3 +322,69 @@ void PainterScene::initBeizerVAOVBO()
 
 }
 
+void PainterScene::initStlVAOVBO()
+{
+
+	std::string file = "D:/base_link.stl";
+	//DoTheImportThing(file);
+	display_utils::STLDocument stlDoc;
+	openBinary(file,stlDoc);
+
+
+	glGenVertexArrays(1, &stlVAO);
+	glGenBuffers(1, &stlVBO);
+
+	glBindVertexArray(stlVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, stlVBO);
+	
+	glBufferData(GL_ARRAY_BUFFER, stlVertiecs.size() * sizeof(float), &stlVertiecs[0], GL_STATIC_DRAW);
+
+	//设置顶点属性指针
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+}
+
+bool PainterScene::openBinary(const std::string &p_FileName, display_utils::STLDocument &p_STLDocument)
+{
+		p_STLDocument.clear();
+		FILE *fp;
+		int numFacet;
+		int error = fopen_s(&fp, p_FileName.c_str(), "rb");
+		float normal[3];
+		float point1[3];
+		display_utils::STLDocument::STLPoint stlPoint;
+		display_utils::STLDocument::STLFacet stlFacet;
+		if (0 == error)//成功打开文件
+		{
+			fseek(fp, STL_LABEL_SIZE, SEEK_SET);//跳过开头
+			fread(&numFacet, sizeof(int), 1, fp);//读取facet的数目
+			for (int facetIndex = 0; facetIndex < numFacet; ++facetIndex)
+			{
+				unsigned short attr; //用来储存属性,实际上把这个值丢弃了
+				fread(normal, sizeof(float), 3, fp);//读取facet的法向量
+				stlFacet.m_Normal = normal;
+				for (int i = 0; i < 3; ++i)
+				{
+					fread(point1, sizeof(float), 3, fp);//读取vertex
+					stlFacet.m_PointList[i] = point1;
+					stlPoint = point1;
+					p_STLDocument.m_VertexList.push_back(stlPoint);
+
+					stlVertiecs.push_back(stlPoint.x);
+					stlVertiecs.push_back(stlPoint.y);
+					stlVertiecs.push_back(stlPoint.z);
+				}
+				fread(&attr, sizeof(unsigned short), 1, fp);//读取属性
+				p_STLDocument.m_FacetList.push_back(stlFacet);
+			}
+		}
+		fclose(fp);
+
+
+
+		//std::cout << "point size is : " << p_STLDocument.m_VertexList.size() << std::endl;
+		//std::cout << "face size is : " << p_STLDocument.m_FacetList.size() << std::endl;
+
+		return true;
+
+}
