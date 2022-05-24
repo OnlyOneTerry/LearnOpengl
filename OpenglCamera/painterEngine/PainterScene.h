@@ -12,6 +12,7 @@
 #include <list>
 
 class GraphicItemBase;
+class GraphicModel;
 
 class PainterScene
 {
@@ -42,6 +43,7 @@ public:
 	void addCircle(glm::vec3 center,float r,int sectorCount, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color);
+	void addModel(std::string modelPath, display_utils::ModelType type, std::string vsPath, std::string fsPath);
 public:
 	Camera camera_;
 private:
@@ -59,7 +61,8 @@ private:
 	GLFWwindow* window_ptr = nullptr;
 	bool move_camera_ = false;
 	//要渲染的图元
-	std::vector<GraphicItemBase*> itemVec_;
+	std::vector<GraphicItemBase*> item_vec_;
+	std::vector<GraphicModel*> model_vec_;
 public:
 
 	//测试画三次贝塞尔曲线
@@ -199,5 +202,21 @@ public:
 	const int STL_LABEL_SIZE = 80;
 	bool openBinary(const std::string &p_FileName, display_utils::STLDocument &p_STLDocument);
 	
+
+	//plane 
+	unsigned int planeVAO, planeVBO;
+	unsigned int texture1=0;
+	void initPlaneVAOVBO();
+	void initTexture();
+
+	std::vector<float> planeVertices = {
+	 -2.0f,0.0f,-2.0f,0.0f,1.0f,
+	  2.0f,0.0f,-2.0f,1.0f,1.0f,
+	  2.0f,0.0f, 2.0f,1.0f,0.0f,
+	
+     -2.0f,0.0f,-2.0f,0.0f,1.0f,
+	 -2.0f,0.0f, 2.0f,0.0f,0.0f,
+	  2.0f,0.0f, 2.0f,1.0f,0.0f
+	};
 };
 

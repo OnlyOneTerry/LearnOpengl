@@ -7,8 +7,11 @@
 #include "GraphicItemCircle.h"
 #include "GraphicItemSphere.h"
 #include "GraphicItemBezier.h"
+#include "GraphicUrdfModel.h"
+#include <stb_image.h>
 
-PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 0.0f, 10.0f))
+
+PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 2.0f, 10.0f))
 {
 	
 }
@@ -21,7 +24,19 @@ PainterScene::~PainterScene()
 void PainterScene::initScene()
 {
 	//initBeizerVAOVBO();
-	initStlVAOVBO();
+	//initStlVAOVBO();
+	//glfwSetCursorPosCallback(window, curse_poscallback);//获取鼠标位置
+	//void curse_poscallback(GLFWwindow *window, double x, double y)
+	//{
+	//	std::cout << "(pos:" << x << "," << y << ")" << std::endl;
+	//}
+
+	initPlaneVAOVBO();
+	initTexture();
+#if 1
+	Shader planeShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.fs");
+#endif
+	planeShader.setInt("texture1", texture1);
 	//渲染循环
 	while (!glfwWindowShouldClose(window_ptr))
 	{
@@ -35,10 +50,6 @@ void PainterScene::initScene()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-#if 1
-		Shader stlShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.vs","D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/circle.fs");
-#endif
-
 		//坐标转换
 		//创建变换矩阵
 		glm::mat4 model = glm::mat4(1.0f);
@@ -61,7 +72,7 @@ void PainterScene::initScene()
 		glDrawArrays(GL_LINES, 0,num);
 #endif 
 
-#if 1
+#if 0
 		//绘制stl
 		stlShader.use();
 		stlShader.setMat4("model", model);
@@ -76,19 +87,62 @@ void PainterScene::initScene()
 		glDrawArrays(GL_TRIANGLES, 0, num);
 #endif 
 
-#if 0
-		for (int i = 0; i < itemVec_.size(); i++)
+#if 1
+
+
+		//添加贴图
+	
+
+
+		//绘制plane
+		planeShader.use();
+		planeShader.setMat4("model", model);
+		planeShader.setMat4("view", view);
+		planeShader.setMat4("projection", projection);
+		planeShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+		glBindVertexArray(planeVAO);
+		glPointSize(5);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		int num = planeVertices.size() / 3;
+		glDrawArrays(GL_TRIANGLES, 0, num);
+#endif 
+
+#if 1
+		for (int i = 0; i < item_vec_.size(); i++)
 		{
-			itemVec_[i]->useShader();
-			itemVec_[i]->setModel("model", model);
-			itemVec_[i]->setView("view", view);
-			itemVec_[i]->setProjection("projection", projection);
-			itemVec_[i]->drawCall();
+			item_vec_[i]->useShader();
+			item_vec_[i]->setModel("model", model);
+			item_vec_[i]->setView("view", view);
+			item_vec_[i]->setProjection("projection", projection);
+			item_vec_[i]->drawCall();
 		}
 #endif 
 		//交换渲染缓冲
 		glfwSwapBuffers(window_ptr);
 		glfwPollEvents();
+		
+		float winX=0.0f, winY=0.0f, winZ=0.0f;
+
+		if (is_mouse_pressed_)
+		{
+			//glReadPixels((int)winX, scr_height_ - (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+			glReadPixels(scr_width_, scr_height_ , 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+			//标准化到-1到1之间，裁剪坐标系坐标值范围 -1到1
+			float x = (2.0f*winX) / scr_width_ - 1.0f;
+			float y = 1.0f - (2.0f*winY) / scr_height_;
+			float z = winZ * 2.0 - 1.0f;
+
+			if (1)
+			{
+				//float w = (2.0 * near1) * 100 / (far1 + near1 - z * (far1 - near1));//深度值 depth
+				//x,y,z 都乘以一个w变换到标准化坐标前的坐标
+				std::cout << "standard space :" << " x: " << x << "  y: " << y << "  z:" << z << std::endl;
+				float w = near_ * far_ / (near_*winZ - far_ * winZ + far_);
+				glm::vec3 worldPostion = glm::inverse(view)*glm::inverse(projection)*w*glm::vec4(x, y, z, 1);
+				std::cout << "word space :" << " x: " << worldPostion.r << "  y: " << worldPostion.g << "  z:" << worldPostion.b << "  w:" << w << std::endl;
+			}
+		}
+
 	}
 
 	exitToClear();
@@ -248,7 +302,7 @@ void PainterScene::addPoint(std::vector<float>& vertexData, std::string vsPath, 
 	GraphicItemPoint* PointItem = new GraphicItemPoint(vsPath, fsPath,color);
 	PointItem->setVertexData(vertexData);
 	PointItem->initVAOVBO();
-	itemVec_.push_back(PointItem);
+	item_vec_.push_back(PointItem);
 }
 
 void PainterScene::addLine(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -256,7 +310,7 @@ void PainterScene::addLine(std::vector<float>& vertexData, std::string vsPath, s
 	GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath,color);
 	lineItem->setVertexData(vertexData);
 	lineItem->initVAOVBO();
-	itemVec_.push_back(lineItem);
+	item_vec_.push_back(lineItem);
 }
 
 void PainterScene::addCube(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -264,7 +318,7 @@ void PainterScene::addCube(std::vector<float>& vertexData, std::string vsPath, s
 	GraphicItemCube* cubeItem = new GraphicItemCube(vsPath, fsPath,color);
 	cubeItem->setVertexData(vertexData);
 	cubeItem->initVAOVBO();
-	itemVec_.push_back(cubeItem);
+	item_vec_.push_back(cubeItem);
 }
 
 void PainterScene::addTriangle(std::vector<float>& vertexData, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -272,7 +326,7 @@ void PainterScene::addTriangle(std::vector<float>& vertexData, std::string vsPat
 	GraphicItemTriangle* triangleItem = new GraphicItemTriangle(vsPath, fsPath,color);
 	triangleItem->setVertexData(vertexData);
 	triangleItem->initVAOVBO();
-	itemVec_.push_back(triangleItem);
+	item_vec_.push_back(triangleItem);
 }
 
 void PainterScene::addCircle(glm::vec3 center, float r, int sectorCount, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -282,7 +336,7 @@ void PainterScene::addCircle(glm::vec3 center, float r, int sectorCount, std::st
 	circleItem->setSectorCount(sectorCount);
 	circleItem->setOrgin(center);
 	circleItem->initVAOVBO();
-	itemVec_.push_back(circleItem);
+	item_vec_.push_back(circleItem);
 }
 
 void PainterScene::addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -291,7 +345,7 @@ void PainterScene::addSphere(glm::vec3 center, float r, std::string vsPath, std:
 	sphereItem->setOrigin(center);
 	sphereItem->setRadius(r);
 	sphereItem->initVAOVBO();
-	itemVec_.push_back(sphereItem);
+	item_vec_.push_back(sphereItem);
 }
 
 void PainterScene::addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color)
@@ -299,7 +353,33 @@ void PainterScene::addBezier(std::vector<display_utils::Point2>& controlPoints, 
 	GraphicItemBezier* bezierItem = new GraphicItemBezier(vsPath, fsPath, color);
 	bezierItem->setControlPoints(controlPoints);
 	bezierItem->initVAOVBO();
-	itemVec_.push_back(bezierItem);
+	item_vec_.push_back(bezierItem);
+}
+
+void PainterScene::addModel(std::string modelPath, display_utils::ModelType type,std::string vsPath, std::string fsPath)
+{
+	switch (type)
+	{
+	case display_utils::MODE_STL:
+	{
+		GraphicUrdfModel* urdfModel = new GraphicUrdfModel(display_utils::MODE_STL);
+		urdfModel->loadModel(modelPath, vsPath, fsPath);
+
+		if (urdfModel->getStlVec().size() > 0)
+		{
+			item_vec_.insert(item_vec_.end(), urdfModel->getStlVec().begin(), urdfModel->getStlVec().end());
+		}
+		model_vec_.push_back(urdfModel);
+	}
+		break;
+	case display_utils::MODE_OBJ:
+
+		break;
+	case display_utils::MODEL_NONE:
+		break;
+	default:
+		break;
+	}
 }
 
 
@@ -386,5 +466,55 @@ bool PainterScene::openBinary(const std::string &p_FileName, display_utils::STLD
 		//std::cout << "face size is : " << p_STLDocument.m_FacetList.size() << std::endl;
 
 		return true;
+
+}
+
+void PainterScene::initPlaneVAOVBO()
+{
+	glGenVertexArrays(1, &planeVAO);
+	glGenBuffers(1, &planeVBO);
+
+	glBindVertexArray(planeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, planeVBO);
+
+	glBufferData(GL_ARRAY_BUFFER, planeVertices.size() * sizeof(float), &planeVertices[0], GL_STATIC_DRAW);
+
+	//设置顶点属性指针
+	//顶点
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	//纹理坐标
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
+
+}
+
+void PainterScene::initTexture()
+{
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);
+
+	unsigned char* data = stbi_load(std::string("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/resources/textures/marble.jpg").c_str(), &width, &height, &nrChannels, 0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "failed to load texture...." << std::endl;
+	}
+
+	stbi_image_free(data);
 
 }

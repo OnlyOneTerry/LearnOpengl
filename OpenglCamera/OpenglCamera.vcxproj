@@ -131,6 +131,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="painterEngine\GraphicUrdfModel.cpp" />
+    <ClCompile Include="painterEngine\GraphicModel.cpp" />
+    <ClCompile Include="painterEngine\GraphicItemStl.cpp" />
     <ClCompile Include="painterEngine\GraphicItemBezier.cpp" />
     <ClCompile Include="painterEngine\GraphicItemSphere.cpp" />
     <ClCompile Include="painterEngine\GraphicItemCircle.cpp" />
@@ -151,9 +154,18 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="urdfParse\UrdfParser.cpp" />
+    <ClCompile Include="urdfParse\tinystr.cpp" />
+    <ClCompile Include="urdfParse\tinyxml.cpp" />
+    <ClCompile Include="urdfParse\tinyxmlerror.cpp" />
+    <ClCompile Include="urdfParse\tinyxmlparser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common\commonDef.h" />
+    <ClInclude Include="common\urdfDef.h" />
+    <ClInclude Include="painterEngine\GraphicUrdfModel.h" />
+    <ClInclude Include="painterEngine\GraphicModel.h" />
+    <ClInclude Include="painterEngine\GraphicItemStl.h" />
     <ClInclude Include="painterEngine\GraphicItemBezier.h" />
     <ClInclude Include="painterEngine\GraphicItemSphere.h" />
     <ClInclude Include="painterEngine\GraphicItemCircle.h" />
@@ -172,16 +184,23 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="painterEngine\PainterScene.h" />
+    <ClInclude Include="urdfParse\UrdfParser.h" />
+    <ClInclude Include="urdfParse\tinystr.h" />
+    <ClInclude Include="urdfParse\tinyxml.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\ball.fs" />
     <None Include="shaders\ball.vs" />
+    <None Include="shaders\bezier.fs" />
+    <None Include="shaders\bezier.vs" />
     <None Include="shaders\circle.fs" />
     <None Include="shaders\circle.vs" />
     <None Include="shaders\cube.fs" />
     <None Include="shaders\cube.vs" />
     <None Include="shaders\line.fs" />
     <None Include="shaders\line.vs" />
+    <None Include="shaders\plane.fs" />
+    <None Include="shaders\plane.vs" />
     <None Include="shaders\point.fs" />
     <None Include="shaders\point.vs" />
     <None Include="shaders\triangle.fs" />

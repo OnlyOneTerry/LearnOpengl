@@ -75,6 +75,30 @@
     <ClCompile Include="painterEngine\GraphicItemBezier.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="urdfParse\tinystr.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="urdfParse\tinyxml.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="urdfParse\tinyxmlerror.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="urdfParse\tinyxmlparser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="urdfParse\UrdfParser.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="painterEngine\GraphicItemStl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="painterEngine\GraphicModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="painterEngine\GraphicUrdfModel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -134,6 +158,27 @@
     <ClInclude Include="painterEngine\GraphicItemBezier.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="urdfParse\tinystr.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="urdfParse\tinyxml.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="common\urdfDef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="urdfParse\UrdfParser.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="painterEngine\GraphicItemStl.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="painterEngine\GraphicModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="painterEngine\GraphicUrdfModel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\triangle.fs" />
@@ -148,5 +193,9 @@
     <None Include="shaders\circle.vs" />
     <None Include="shaders\ball.fs" />
     <None Include="shaders\ball.vs" />
+    <None Include="shaders\plane.fs" />
+    <None Include="shaders\plane.vs" />
+    <None Include="shaders\bezier.fs" />
+    <None Include="shaders\bezier.vs" />
   </ItemGroup>
 </Project>
