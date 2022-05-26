@@ -18,25 +18,27 @@ PainterScene::PainterScene() :camera_(glm::vec3(0.0f, 2.0f, 10.0f))
 
 PainterScene::~PainterScene()
 {
-	
+	for (int i = 0; i < item_vec_.size(); i++)
+	{
+		if (item_vec_[i])
+		{
+			delete item_vec_[i];
+		}
+	}
 }
 
 void PainterScene::initScene()
 {
-	//initBeizerVAOVBO();
+
 	//initStlVAOVBO();
-	//glfwSetCursorPosCallback(window, curse_poscallback);//获取鼠标位置
-	//void curse_poscallback(GLFWwindow *window, double x, double y)
-	//{
-	//	std::cout << "(pos:" << x << "," << y << ")" << std::endl;
-	//}
 
 	initPlaneVAOVBO();
-	initTexture();
-#if 1
+	//initTexture();
+#if 10
 	Shader planeShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.fs");
+	//planeShader.setInt("texture1", texture1);
 #endif
-	planeShader.setInt("texture1", texture1);
+
 	//渲染循环
 	while (!glfwWindowShouldClose(window_ptr))
 	{
@@ -45,7 +47,9 @@ void PainterScene::initScene()
 		last_frame_ = currentFrame;
 
 		processInput(window_ptr);
+		glEnable(GL_MULTISAMPLE);
 		glEnable(GL_DEPTH_TEST);
+
 		//初始化场景背景色
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -57,20 +61,6 @@ void PainterScene::initScene()
 		glm::mat4 projection = glm::mat4(1.0f);
 		view = camera_.GetViewMatrix();
 		projection = glm::perspective(glm::radians(camera_.Zoom), (float)scr_width_ / scr_height_, near_, far_);
-		
-#if 0
-		//绘制贝塞尔
-		beizerShader.use();
-		beizerShader.setMat4("model", model);
-		beizerShader.setMat4("view", view);
-		beizerShader.setMat4("projection", projection);
-		beizerShader.setVec3("color", glm::vec3(1.0f, 0.0f, 1.0f));
-		glBindVertexArray(beizerVAO);
-		glPointSize(5);
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		int num = beizerVertices_.size() / 3;
-		glDrawArrays(GL_LINES, 0,num);
-#endif 
 
 #if 0
 		//绘制stl
@@ -89,40 +79,28 @@ void PainterScene::initScene()
 
 #if 1
 
-
-		//添加贴图
-	
-
-
 		//绘制plane
 		planeShader.use();
 		planeShader.setMat4("model", model);
 		planeShader.setMat4("view", view);
 		planeShader.setMat4("projection", projection);
-		planeShader.setVec3("color", glm::vec3(1.0f, 1.0f, 1.0f));
+		planeShader.setVec3("color", glm::vec3(0.5f, 0.5f, 0.5f));
 		glBindVertexArray(planeVAO);
-		glPointSize(5);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		int num = planeVertices.size() / 3;
 		glDrawArrays(GL_TRIANGLES, 0, num);
 #endif 
 
 #if 1
-		for (int i = 0; i < item_vec_.size(); i++)
-		{
-			item_vec_[i]->useShader();
-			item_vec_[i]->setModel("model", model);
-			item_vec_[i]->setView("view", view);
-			item_vec_[i]->setProjection("projection", projection);
-			item_vec_[i]->drawCall();
-		}
+		renderItems(item_vec_, view, projection);
+		//renderGrid(view,projection);
 #endif 
 		//交换渲染缓冲
 		glfwSwapBuffers(window_ptr);
 		glfwPollEvents();
 		
 		float winX=0.0f, winY=0.0f, winZ=0.0f;
-
+#if 0
 		if (is_mouse_pressed_)
 		{
 			//glReadPixels((int)winX, scr_height_ - (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
@@ -142,6 +120,7 @@ void PainterScene::initScene()
 				std::cout << "word space :" << " x: " << worldPostion.r << "  y: " << worldPostion.g << "  z:" << worldPostion.b << "  w:" << w << std::endl;
 			}
 		}
+#endif
 
 	}
 
@@ -174,7 +153,7 @@ void PainterScene::mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	last_y_ = ypos;
 	if (move_camera_)
 	{
-		camera_.ProcessMouseMovement(xoffset, yoffset);
+		camera_.ProcessMouseMovement(-xoffset, -yoffset);
 	}
 	else
 	{
@@ -244,6 +223,38 @@ void PainterScene::processInput(GLFWwindow* window)
 		camera_.resetPosition(0.0f, 0.0f, 10.0f);
 }
 
+void PainterScene::curse_poscallback(GLFWwindow *window, double x, double y)
+{
+
+}
+
+void PainterScene::renderModel(glm::mat4& view, glm::mat4& projection)
+{
+	for (int i = 0; i < model_vec_.size(); i++)
+	{
+		//std::vector<GraphicModel*>& itemVec = model_vec_[i];
+	}
+}
+
+
+void PainterScene::renderItems(std::vector<GraphicItemBase*>& itemVec, glm::mat4& view,glm::mat4& projection)
+{
+	for (int i = 0; i < itemVec.size(); i++)
+	{
+		if (!itemVec[i]) continue;
+		itemVec[i]->useShader();
+		itemVec[i]->setViewPos(camera_.Position);
+		itemVec[i]->setShaderVec3("viewPos", camera_.Position);
+		itemVec[i]->setShaderVec3("lightColor", item_vec_[i]->getLightColor());
+		itemVec[i]->setShaderVec3("lightPos", item_vec_[i]->getLightPos());
+		itemVec[i]->setShaderMat4("model", item_vec_[i]->getModelMatrix());
+		itemVec[i]->setShaderMat4("view", view);
+		itemVec[i]->setShaderMat4("projection", projection);
+		itemVec[i]->drawCall();
+	}
+}
+
+
 void PainterScene::setNear(float nearDis)
 {
 	near_ = nearDis;
@@ -259,6 +270,7 @@ GLFWwindow* PainterScene::initWindow()
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 #ifdef __APdisplay_utilsE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -382,24 +394,61 @@ void PainterScene::addModel(std::string modelPath, display_utils::ModelType type
 	}
 }
 
-
-
-void PainterScene::initBeizerVAOVBO()
+void PainterScene::addGrid(float width, float height, int row, int col, std::string vsPath, std::string fsPath, glm::vec3 origin, glm::vec3 color)
 {
-	genearteBezier();
+	if (width <= 0 || height <= 0 || row <=0 || col <=0)
+	{
+		std::cout << "Warning:failed to create a grid,width or height must be positive"<<std::endl;
+		return;
+	}
 
-	glGenVertexArrays(1, &beizerVAO);
-	glGenBuffers(1, &beizerVBO);
+	glm::vec3 p1 = { -width / 2.0,origin.y,-height / 2.0 };
+	glm::vec3 p2 = { width / 2.0, origin.y,-height / 2.0 };
+	glm::vec3 p3 = { width / 2.0, origin.y, height / 2.0 };
+	glm::vec3 p4 = { -width / 2.0,origin.y, height / 2.0 };
 
-	glBindVertexArray(beizerVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, beizerVBO);
+	//生成x方向直线
+	float deltaZ = height / row;
+	//p1--------------------->p2
+	for (int i = 0; i <= row; i++)
+	{
+		std::vector<float> lineData;
+		lineData.push_back(p1.x);
+		lineData.push_back(p1.y);
+		lineData.push_back(p1.z+deltaZ * i);
 
-	glBufferData(GL_ARRAY_BUFFER, beizerVertices_.size() * sizeof(float), &beizerVertices_[0], GL_STATIC_DRAW);
+		lineData.push_back(p2.x);
+		lineData.push_back(p2.y);
+		lineData.push_back(p2.z+deltaZ * i);
+		addLine(lineData, vsPath, fsPath, color);
 
-	//设置顶点属性指针
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-	glEnableVertexAttribArray(0);
+		glm::vec3 pBegin = { p1.x,p1.y,p1.z + deltaZ * i };
+		glm::vec3 pEnd = { p2.x,p2.y,p2.z + deltaZ * i };
+		std::cout << " pBegin : " << pBegin.x << " " << pBegin.y << " " << pBegin.z << std::endl;
+		std::cout << " pEnd : " << pEnd.x << " " << pEnd.y << " " << pEnd.z << std::endl;
+	}
 
+	//生成z方向直线
+	//p1---------------------->p4
+	float deltaX = width / col;
+	for (int i = 0; i <= col; i++)
+	{
+		std::vector<float> lineData;
+		lineData.push_back(p1.x + deltaX * i);
+		lineData.push_back(p1.y);
+		lineData.push_back(p1.z);
+
+		lineData.push_back(p4.x + deltaX * i);
+		lineData.push_back(p4.y);
+		lineData.push_back(p4.z);
+		addLine(lineData, vsPath, fsPath, color);
+
+
+		glm::vec3 pBegin = { p1.x + deltaX * i,p1.y,p1.z };
+		glm::vec3 pEnd = { p4.x + deltaX * i,p4.y,p4.z };
+		std::cout << " pBegin : " << pBegin.x << " " << pBegin.y << " " << pBegin.z << std::endl;
+		std::cout << " pEnd : " << pEnd.x << " " << pEnd.y << " " << pEnd.z << std::endl;
+	}
 }
 
 void PainterScene::initStlVAOVBO()

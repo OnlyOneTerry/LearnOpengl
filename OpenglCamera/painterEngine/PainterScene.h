@@ -25,6 +25,9 @@ public:
 	void mouse_button_callback(GLFWwindow* window, int button, int action, int modes);
 	void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 	void processInput(GLFWwindow* window);
+	void curse_poscallback(GLFWwindow *window, double x, double y);
+	void renderModel(glm::mat4& view, glm::mat4& projection);
+	void renderItems(std::vector<GraphicItemBase*>& itemVec,glm::mat4& view, glm::mat4& projection);
 	//设置近平面远平面
 	void setNear(float nearDis);
 	void setFar(float farDis);
@@ -44,6 +47,7 @@ public:
 	void addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addModel(std::string modelPath, display_utils::ModelType type, std::string vsPath, std::string fsPath);
+	void addGrid(float width, float height, int row, int col, std::string vsPath, std::string fsPath, glm::vec3 origin = { 0.0f,0.0f,0.0f }, glm::vec3 color = {1.0f,1.0f,1.0f});
 public:
 	Camera camera_;
 private:
@@ -64,78 +68,6 @@ private:
 	std::vector<GraphicItemBase*> item_vec_;
 	std::vector<GraphicModel*> model_vec_;
 public:
-
-	//测试画三次贝塞尔曲线
-#include <cstdio>
-
-	struct point
-	{
-		float x;
-		float y;
-	};
-	std::vector<float> beizerVertices_;
-	std::vector<point> bezierPoints_;
-	// simple linear interpolation between two points
-	void lerp(point& dest, const point& a, const point& b, const float t)
-	{
-		dest.x = a.x + (b.x - a.x)*t;
-		dest.y = a.y + (b.y - a.y)*t;
-	}
-	void initBeizerVAOVBO();
-
-	unsigned int beizerVAO;
-	unsigned int beizerVBO;
-	// evaluate a point on a bezier-curve. t goes from 0 to 1.0
-	void bezier(point &dest, const point& a, const point& b, const point& c, const point& d, const float t)
-	{
-		point ab, bc, cd, abbc, bccd;
-		lerp(ab, a, b, t);           // point between a and b (green)
-		lerp(bc, b, c, t);           // point between b and c (green)
-		lerp(cd, c, d, t);           // point between c and d (green)
-		lerp(abbc, ab, bc, t);       // point between ab and bc (blue)
-		lerp(bccd, bc, cd, t);       // point between bc and cd (blue)
-		lerp(dest, abbc, bccd, t);   // point on the bezier-curve (black)
-	}
-
-	// small test program.. just prints the points
-	int genearteBezier()
-	{
-		// 4 points define the bezier-curve. These are the points used
-		// for the example-images on this page.
-		point a = { -2, 0 };
-		point b = { -2, 3 };
-		point c = { 2,  2 };
-		point d = { 3, -2 };
-
-		for (int i = 0; i < 100; ++i)
-		{
-			point p;
-			float t = static_cast<float>(i) / 99.0;
-			bezier(p, a, b, c, d, t);
-			printf("%f %f\n", p.x, p.y);
-			bezierPoints_.push_back(p);
-
-		}
-
-		for (int i = 0; i < bezierPoints_.size(); i++)
-		{
-			point p = bezierPoints_[i];
-
-			beizerVertices_.push_back(p.x);
-			beizerVertices_.push_back(p.y);
-			beizerVertices_.push_back(-1.0f);
-
-			if (i < bezierPoints_.size()-1)
-			{
-				point pNext = bezierPoints_[i + 1];
-				beizerVertices_.push_back(pNext.x);
-				beizerVertices_.push_back(pNext.y);
-				beizerVertices_.push_back(-1.0f);
-			}
-		}
-
-		return 0;
-	}
 
 	//模型解析
 
@@ -210,13 +142,13 @@ public:
 	void initTexture();
 
 	std::vector<float> planeVertices = {
-	 -2.0f,0.0f,-2.0f,0.0f,1.0f,
-	  2.0f,0.0f,-2.0f,1.0f,1.0f,
-	  2.0f,0.0f, 2.0f,1.0f,0.0f,
-	
-     -2.0f,0.0f,-2.0f,0.0f,1.0f,
-	 -2.0f,0.0f, 2.0f,0.0f,0.0f,
-	  2.0f,0.0f, 2.0f,1.0f,0.0f
+	 -15.0f,0.0f,-15.0f,0.0f,1.0f,
+	  15.0f,0.0f,-15.0f,1.0f,1.0f,
+	  15.0f,0.0f, 15.0f,1.0f,0.0f,
+	  		  	  
+     -15.0f,0.0f,-15.0f,0.0f,1.0f,
+	 -15.0f,0.0f, 15.0f,0.0f,0.0f,
+	  15.0f,0.0f, 15.0f,1.0f,0.0f
 	};
 };
 

@@ -31,7 +31,7 @@ void GraphicItemLine::drawCall()
 {
 	shader_->use();
 	glBindVertexArray(vao_);
-	glLineWidth(5);
+	glLineWidth(1);
 	int num = float_vertices_.size() / 3;
 	glDrawArrays(GL_LINE_LOOP, 0, num);
 	//std::cout << "vao is ------" << vao_ << std::endl;
