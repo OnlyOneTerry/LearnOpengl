@@ -1,0 +1,521 @@
+#include"../painterEngine/PainterScene.h"
+#include "../common/commonDef.h"
+#include <direct.h>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <learnopengl/model.h>
+#include <list>
+
+#include "../urdfParse/tinyxml.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+
+void printTestXml();
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int modes);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void curse_poscallback(GLFWwindow *window, double x, double y);
+
+PainterScene painterScene;
+
+void processMesh(aiMesh* mesh, std::list<float>& vertices)
+{
+	for (int i = 0; i < mesh->mNumVertices; i++)
+	{
+		vertices.push_back(mesh->mVertices[i].x);
+		vertices.push_back(mesh->mVertices[i].y);
+		vertices.push_back(mesh->mVertices[i].z);
+		std::cout << "x : " << mesh->mVertices[i].x << "y : " << mesh->mVertices[i].y << "z : " << mesh->mVertices[i].z << std::endl;
+	}	
+}
+
+
+bool DoTheImportThing(const std::string& pFile)
+{
+	// Create an instance of the Importer class
+	Assimp::Importer importer;
+	// And have it read the given file with some example postprocessing
+	// Usually - if speed is not the most important aspect for you - you'll 
+	// propably to request more postprocessing than we do in this example.
+	const aiScene* scene = importer.ReadFile(pFile,
+		aiProcess_CalcTangentSpace |
+		aiProcess_Triangulate |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_SortByPType);
+
+	// If the import failed, report it
+	if (!scene)
+	{
+		//DoTheErrorLogging(importer.GetErrorString());
+		std::printf("failed to import %s!\n", pFile.c_str());
+		return false;
+	}
+	// Now we can access the file's contents. 
+	//DoTheSceneProcessing(scene);
+	if (scene->HasMeshes())
+	{
+		std::printf("has %d meshes!\n", scene->mNumMeshes);
+		std::list<float> vertixAll;
+		for (int i = 0; i < scene->mNumMeshes; ++i)
+		{
+			std::printf("%d: %u vertices!\n", i, scene->mMeshes[i]->mNumVertices);
+			//processMesh(scene->mMeshes[i], vertixAll);
+			if (scene->mMeshes[i]->HasFaces())
+				std::printf("%d: %u faces!\n", i, scene->mMeshes[i]->mNumFaces);
+		}
+	}
+	// We're done. Everything will be cleaned up by the importer destructor
+	return true;
+}
+
+
+#if 0
+const int STL_LABEL_SIZE = 80;
+bool openBinary(const std::string &p_FileName, STLDocument &p_STLDocument)
+{
+	p_STLDocument.clear();
+	FILE *fp;
+	int numFacet;
+	int error = fopen_s(&fp, p_FileName.c_str(), "rb");
+	float normal[3];
+	float point1[3];
+	STLDocument::STLPoint stlPoint;
+	STLDocument::STLFacet stlFacet;
+	if (0 == error)//成功打开文件
+	{
+		fseek(fp, STL_LABEL_SIZE, SEEK_SET);//跳过开头
+		fread(&numFacet, sizeof(int), 1, fp);//读取facet的数目
+		for (int facetIndex = 0; facetIndex < numFacet; ++facetIndex)
+		{
+			unsigned short attr; //用来储存属性,实际上把这个值丢弃了
+			fread(normal, sizeof(float), 3, fp);//读取facet的法向量
+			stlFacet.m_Normal = normal;
+			for (int i = 0; i < 3; ++i)
+			{
+				fread(point1, sizeof(float), 3, fp);//读取vertex
+				stlFacet.m_PointList[i] = point1;
+				stlPoint = point1;
+				p_STLDocument.m_VertexList.push_back(stlPoint);
+			}
+			fread(&attr, sizeof(unsigned short), 1, fp);//读取属性
+			p_STLDocument.m_FacetList.push_back(stlFacet);
+		}
+	}
+	std::cout << "point size is : " << p_STLDocument.m_VertexList.size() << std::endl;
+	std::cout << "face size is : " << p_STLDocument.m_FacetList.size() << std::endl;
+	fclose(fp);
+	return true;
+}
+
+#endif
+
+
+
+
+int main()
+{
+	painterScene.initWindow();
+	GLFWwindow* window = painterScene.getWindow();
+	if (window)
+	{
+		//绑定回调函数
+		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+		glfwSetCursorPosCallback(window, mouse_callback);
+		glfwSetMouseButtonCallback(window, mouse_button_callback);
+		glfwSetScrollCallback(window, scroll_callback);
+		//glfwSetCursorPosCallback(window, curse_poscallback);//获取鼠标位置
+	}
+	else
+	{
+		return -1;
+	}
+	bool loadSucc = painterScene.loadOPenglFun();
+	if (!loadSucc)
+	{
+		std::cout << "failed to load glad" << std::endl;
+		return -1;
+	}
+#if 1
+	//添加图元
+
+	std::vector<float> pointData = {
+	   0.0f,0.0f,3.0f
+	};
+
+	std::vector<display_utils::TVertex> circleData;
+
+	std::vector<float> lineData1 =
+	{
+	   -10.0f,0.0f,0.0f,
+	   10.0f,0.0f,0.0f
+	};
+
+
+	std::vector<float> lineData2 =
+	{
+	   -10.0f,0.0f,-2.0f,
+	   10.0f,0.0f,-2.0f
+	};
+
+
+	std::vector<float> lineData3 =
+	{
+	   -10.0f,0.0f,-4.0f,
+	   10.0f,0.0f,-4.0f
+	};
+
+	std::vector<float> lineData4 =
+	{
+	   -10.0f,0.0f,-6.0f,
+	   10.0f,0.0f,-6.0f
+	};	
+	
+	
+	std::vector<float> lineData5 =
+	{
+	   -10.0f,0.0f,-8.0f,
+	   10.0f,0.0f,-8.0f
+	};
+
+	std::vector<float> lineData6 =
+	{
+	   -10.0f,0.0f,-10.0f,
+	   10.0f,0.0f,-10.0f
+	};
+
+	std::vector<float> lineData7 =
+	{
+	   -10.0f,0.0f,2.0f,
+	   10.0f,0.0f,2.0f
+	};
+
+	std::vector<float> lineData8 =
+	{
+	   -10.0f,0.0f,4.0f,
+	   10.0f,0.0f,4.0f
+	};
+
+	std::vector<float> lineData9 =
+	{
+	   -10.0f,0.0f,6.0f,
+	   10.0f,0.0f,6.0f
+	};
+
+	std::vector<float> lineData10 =
+	{
+	   -10.0f,0.0f,8.0f,
+	   10.0f,0.0f,8.0f
+	};
+
+	std::vector<float> lineData11 =
+	{
+	   -10.0f,0.0f,10.0f,
+	   10.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData12 =
+	{
+	   -10.0f,0.0f,-10.0f,
+	   -10.0f,0.0f,10.0f
+	};
+
+
+	std::vector<float> lineData13 =
+	{
+	   -8.0f,0.0f,-10.0f,
+	   -8.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData14 =
+	{
+	   -6.0f,0.0f,-10.0f,
+	   -6.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData15 =
+	{
+	   -4.0f,0.0f,-10.0f,
+	   -4.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData16 =
+	{
+	   -2.0f,0.0f,-10.0f,
+	   -2.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData17 =
+	{
+	   0.0f,0.0f,-10.0f,
+	   0.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData18 =
+	{
+	   2.0f,0.0f,-10.0f,
+	   2.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData19 =
+	{
+	   4.0f,0.0f,-10.0f,
+	   4.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData20 =
+	{
+	   6.0f,0.0f,-10.0f,
+	   6.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData21 =
+	{
+	   8.0f,0.0f,-10.0f,
+	   8.0f,0.0f,10.0f
+	};
+
+	std::vector<float> lineData22 =
+	{
+	   10.0f,0.0f,-10.0f,
+	   10.0f,0.0f,10.0f
+	};
+
+	std::vector<float> tr1 = {
+		-0.5f, -0.5f, -2.0f,
+		 0.5f, -0.5f, -2.0f,
+		 0.0f,  0.5f, -2.0f
+	};
+	std::vector<float> tr2 = {
+		-0.5f, -0.5f, -4.0f,
+		 0.5f, -0.5f, -4.0f,
+		 0.0f,  0.5f, -4.0f
+	};
+	std::vector<float> tr3 = {
+		-0.5f, -0.5f, 2.0f,
+		 0.5f, -0.5f, 2.0f,
+		 0.0f,  0.5f, 2.0f
+	};
+
+	std::vector<float> cubeData = {
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f, -0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+
+	-0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f, -0.5f,
+	 0.5f, -0.5f,  0.5f,
+	 0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f,  0.5f,
+	-0.5f, -0.5f, -0.5f,
+
+	-0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f, -0.5f,
+	 0.5f,  0.5f,  0.5f,
+	 0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f,  0.5f,
+	-0.5f,  0.5f, -0.5f
+	};
+
+	//std::string baseDir = "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/";
+	char *path = NULL;
+	path = _getcwd(NULL, 1);
+	std::string baseDir(path);
+	baseDir = baseDir + "\\shaders\\";
+	//painterScene.addPoint(pointData, baseDir + "point.vs", baseDir + "point.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	painterScene.addLine(lineData1, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData2, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData3, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData4, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData5, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData6, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData7, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData8, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData9, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData10, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData11, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData12, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData13, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData14, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData15, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData16, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData17, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData18, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData19, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData20, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData21, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	painterScene.addLine(lineData22, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+   //painterScene.addCircle(glm::vec3(0.0f,0.2f,-4.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	//painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	//painterScene.addCircle(glm::vec3(0.0f,0.2f,-3.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	//painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
+	//painterScene.addCircle(glm::vec3(0.0f,0.2f,-2.3f),1.0f,16, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	//painterScene.addTriangle(tr2, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	//painterScene.addTriangle(tr3, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	//painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
+	//painterScene.addSphere(glm::vec3(0.0f, 0.0f, 4.0f),0.5f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
+	//painterScene.addSphere(glm::vec3(0.0f, 0.0f, -4.0f), 0.8f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
+
+	std::vector<display_utils::Point2> controlPoints;
+	display_utils::Point2 a = { 0, 0.2 };
+	display_utils::Point2 b = { 0.4, 0.4 };
+	display_utils::Point2 c = { 0.3,  -0.2 };
+	display_utils::Point2 d = { 0, -0.4 };
+	controlPoints.push_back(a);
+	controlPoints.push_back(b);
+	controlPoints.push_back(c);
+	controlPoints.push_back(d);
+
+	//painterScene.addBezier(controlPoints, baseDir + "bezier.vs", baseDir + "bezier.fs", glm::vec3(1.0f, 0.0f, 0.0f));
+
+	std::vector<display_utils::Point2> controlPoints2;
+
+	display_utils::Point2 a1 = { 0, -0.4 };
+	display_utils::Point2 b1 = { -0.4, -0.1 };
+	display_utils::Point2 c1 = { -0.35, 0.4 };
+	display_utils::Point2 d1 = { 0, 0.2 };
+
+	controlPoints2.push_back(a1);
+	controlPoints2.push_back(b1);
+	controlPoints2.push_back(c1);
+	controlPoints2.push_back(d1);
+
+	//painterScene.addBezier(controlPoints2, baseDir + "bezier.vs", baseDir + "bezier.fs", glm::vec3(1.0f, 0.0f, 0.0f));
+
+	painterScene.addModel("D:/urdfResource/abb_irb6700_support/urdf/irb6700_150_320.urdf", display_utils::MODE_STL, baseDir + "stl.vs", baseDir + "stl.fs");
+
+#endif
+	//初始化场景
+	painterScene.initScene();
+
+	//测试xml解析
+
+	return 0;
+}
+
+
+
+void curse_poscallback(GLFWwindow *window, double x, double y)
+{
+	//std::cout << "(pos:" << x << "," << y << ")" << std::endl;
+	//painterScene.curse_poscallback(window, x, y);
+}
+
+void framebuffer_size_callback(GLFWwindow * window, int width, int height)
+{
+	painterScene.framebuffer_size_callback(window, width, height);
+}
+
+void mouse_callback(GLFWwindow * window, double xpos, double ypos)
+{
+	painterScene.mouse_callback(window, xpos, ypos);
+}
+
+void mouse_button_callback(GLFWwindow * window, int button, int action, int modes)
+{
+	painterScene.mouse_button_callback(window, button, action, modes);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	painterScene.scroll_callback(window, xoffset, yoffset);
+}
+
+
+void printTestXml()
+{
+	int i = 1;
+	//把xml文件所在绝对路径赋值给string变量
+	string filefullpath = "D:/test.xml";
+
+	//创建文件对象
+	TiXmlDocument* myDocument = new TiXmlDocument(filefullpath.c_str());
+	//加载文件
+	myDocument->LoadFile();
+	//获取文件根节点
+	TiXmlElement* rootElement = myDocument->RootElement();
+	if (!rootElement)
+	{
+		std::cout << "failed to find rootElement...." << std::endl;
+		return;
+	}
+	TiXmlAttribute* scAttr = rootElement->FirstAttribute();
+	//输出根节点的名称
+	std::cout << rootElement->Value() << " ";
+	//输出根节点属性
+	std::cout << scAttr->Name() << ":" << scAttr->Value() << std::endl;
+
+
+	for (TiXmlElement* classElement = rootElement->FirstChildElement(); NULL != classElement; classElement = classElement->NextSiblingElement())
+	{
+		//输出class 元素的属性
+		TiXmlAttribute* CAttr = classElement->FirstAttribute();
+		while (CAttr != NULL)
+		{
+			std::cout << "class " << CAttr->Name() << ":" << CAttr->Value();
+			CAttr = CAttr->Next();
+		}
+		std::cout << endl;
+		std::cout << "===================================" << std::endl;
+#if 1
+		//输出student的属性和内容
+		for (TiXmlElement* stuElement = classElement->FirstChildElement(); NULL != stuElement; stuElement = stuElement->NextSiblingElement())
+		{
+			//输出student的属性
+			std::cout << stuElement->Value() << "No." << i << " ";
+			i += 1;
+			TiXmlAttribute* pAttr = stuElement->FirstAttribute();
+			while (NULL != pAttr)
+			{
+				//输出student的属性
+				std::cout << pAttr->Name() << ":" << pAttr->Value() << " ";
+				pAttr = pAttr->Next();
+			}
+			std::cout << std::endl;
+
+			//输出student的内容
+			for (TiXmlElement* sonElement = stuElement->FirstChildElement(); NULL != sonElement; sonElement = sonElement->NextSiblingElement())
+			{
+				std::cout << sonElement->Value() << ":";
+				std::cout << sonElement->FirstChild()->Value() << endl;
+			}
+
+			if (NULL != stuElement->NextSiblingElement())
+			{
+				std::cout << std::endl;
+			}
+		}
+		i = 1;
+		std::cout << "-----------------------------------------" << std::endl;
+#endif
+	}
+}
