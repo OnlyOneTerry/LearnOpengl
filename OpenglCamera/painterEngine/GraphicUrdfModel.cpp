@@ -100,7 +100,7 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 		dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(false);
 	}
 
-
+#if 0
 	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
 	{
 		if (iter->second == "base_link")
@@ -109,9 +109,9 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 rpy = { -1.57f,0.0f,0.0f };
 			//父类坐标系的x,y,z
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(baseCoordinate_.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(baseCoordinate_.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(baseCoordinate_.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(baseCoordinate_.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
 			rotateZ = glm::rotate(rotateZ,rpy.z, glm::vec3(baseCoordinate_.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
@@ -132,11 +132,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			//父类坐标系的x,y,z
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, rpy.y, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = model * rotate;
 			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(model);
@@ -155,11 +155,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX,rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX,rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY,rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY,rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ,rpy.y, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ,rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.78f));
@@ -179,11 +179,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX,rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX,rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, rpy.y, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			link2Model = glm::translate(model, glm::vec3(0.32f, 0.0f, 0.0f));
 			link2Model = link2Model * rotate;
@@ -203,11 +203,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, rpy.y, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			cylinderModel = glm::translate(model, glm::vec3(-0.349f, -0.194f, -0.142f));
 			cylinderModel = cylinderModel * rotate;
@@ -227,11 +227,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = cylinderModel * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.2089f,0.0f,-1.57f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, rpy.y, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			pistonModel = glm::translate(cylinderModel, glm::vec3(0.0f, 0.0f, 0.0f));
 			pistonModel = pistonModel * rotate;
@@ -251,11 +251,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = link2Model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, glm::radians(rpy.r), glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, glm::radians(rpy.p), glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, glm::radians(rpy.p), glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ,rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = glm::translate(link2Model, glm::vec3(0.0f, 0.0f, 1.28f));
 			model = model * rotate;
@@ -274,11 +274,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, glm::radians(rpy.r), glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, glm::radians(rpy.p), glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY,rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, glm::radians(rpy.p), glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.2f));
 			model = model * rotate;
@@ -297,9 +297,9 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
 			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
@@ -319,11 +319,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, rpy.p, glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = glm::translate(model, glm::vec3(0.2f, 0.0f, 0.0f));
 			model = model * rotate;
@@ -341,11 +341,11 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			glm::vec3 rpy = { 0.0f,1.57f,0.0f };
 			glm::mat4 rotateX = glm::mat4(1.0f);
-			rotateX = glm::rotate(rotateX, glm::radians(rpy.r), glm::vec3(Coordinate.x, 0, 0));
+			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
 			glm::mat4 rotateY = glm::mat4(1.0f);
-			rotateY = glm::rotate(rotateY, glm::radians(rpy.p), glm::vec3(Coordinate.y, 0, 0));
+			rotateY = glm::rotate(rotateY,rpy.y, glm::vec3(Coordinate.y, 0, 0));
 			glm::mat4 rotateZ = glm::mat4(1.0f);
-			rotateZ = glm::rotate(rotateZ, glm::radians(rpy.p), glm::vec3(Coordinate.z, 0, 0));
+			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 			model = model * rotate;
@@ -354,9 +354,21 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			break;
 		}
 	}
+#endif
 
 	createTreeNodes();
 	urdf::TFTreeNodeData* root = createTFTree();
+
+	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
+	{
+		if (iter->second == "base_link")
+		{
+			glm::mat4 trans = calcTFTreeNodeMatrix(root, iter->second);
+			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(trans);
+			dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
+		}
+
+	}
 }
 
 void GraphicUrdfModel::stringSplit(const std::string& str, const std::string& splits, std::vector<std::string>& res)
@@ -473,24 +485,23 @@ void GraphicUrdfModel::createTreeNodes()
 		node_vec_.push_back(node);
 	}
 	//创建基座节点
-	int index = 0;
 	std::vector<int> indexVec;
 	for (int i = 0; i < model_.joint_array.size(); i++)
 	{
 		if (model_.joint_array[i].parent_link_name == "base_link")
 		{
 			urdf::TFTreeNodeData* node = new urdf::TFTreeNodeData;
-			node->name = model_.joint_array[index].parent_link_name;
+			node->name = model_.joint_array[i].parent_link_name;
 			glm::vec3 axis = { 0.0f,0.0f,0.0f };
-			getVec3FromString(model_.joint_array[index].axis, axis);
+			getVec3FromString(model_.joint_array[i].axis, axis);
 			node->axis = axis;
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			node->coordinate = Coordinate;
-			glm::vec3 rpy = { 0.0f,0.0f,0.0f };
-			getVec3FromString(model_.joint_array[index].origin.rotation_str, rpy);
+			glm::vec3 rpy = { -1.57f,0.0f,0.0f };
+			//getVec3FromString(model_.joint_array[i].origin.rotation_str, rpy);
 			glm::vec3 position = { 0.0f,0.0f,0.0f };
-			getVec3FromString(model_.joint_array[index].origin.xyz_str, position);
+			getVec3FromString(model_.joint_array[i].origin.xyz_str, position);
 			calcTransformMatrix(model, rpy, Coordinate, position);
 			node->matMatrix = model;
 			node->limit = model_.joint_array[i].limit;
@@ -506,14 +517,37 @@ void GraphicUrdfModel::createTreeNodes()
 void GraphicUrdfModel::calcTransformMatrix(glm::mat4& model,glm::vec3 rpy,glm::vec3 coor,glm::vec3 position)
 {
 	glm::mat4 rotateX = glm::mat4(1.0f);
-	rotateX = glm::rotate(rotateX, rpy.r, glm::vec3(coor.x, 0, 0));
+	rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(coor.x, 0, 0));
 	glm::mat4 rotateY = glm::mat4(1.0f);
-	rotateY = glm::rotate(rotateY, rpy.p, glm::vec3(coor.y, 0, 0));
+	rotateY = glm::rotate(rotateY, rpy.y, glm::vec3(coor.y, 0, 0));
 	glm::mat4 rotateZ = glm::mat4(1.0f);
-	rotateZ = glm::rotate(rotateZ, rpy.p, glm::vec3(coor.z, 0, 0));
+	rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(coor.z, 0, 0));
 	glm::mat4 rotate = rotateX * rotateY*rotateZ;
 	model = glm::translate(model, position);
 	model = model * rotate;
+}
+
+glm::mat4 GraphicUrdfModel::calcTFTreeNodeMatrix(urdf::TFTreeNodeData* node,std::string nodeName)
+{
+	glm::mat4 model = glm::mat4(1.0f);
+
+	if ((!node)|| (0 == node->childNodeDatas.size()))
+	{
+		return model;
+	}
+	if (node->name == nodeName)
+	{
+		model = node->matMatrix;
+		return model;
+	}
+	else
+	{
+		for (int i = 0; i < node->childNodeDatas.size(); i++)
+		{
+			model = model*calcTFTreeNodeMatrix( node->childNodeDatas[i],nodeName);
+		}
+	}
+	return model;
 }
 
 

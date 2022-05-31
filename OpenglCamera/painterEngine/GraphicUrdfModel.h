@@ -24,6 +24,8 @@ public:
 	urdf::TFTreeNodeData* createTFTree();
 	void createTreeNodes();
 	void calcTransformMatrix(glm::mat4& model, glm::vec3 rpy, glm::vec3 coor, glm::vec3 position);
+	glm::mat4 calcTFTreeNodeMatrix(urdf::TFTreeNodeData* node, std::string nodeName);
+	
 	std::vector<GraphicItemBase*>& getStlVec();
 
 private:
