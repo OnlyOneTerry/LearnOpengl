@@ -81,6 +81,11 @@ glm::vec3 GraphicItemBase::getLightColor()
 	return lightColor_;
 }
 
+void GraphicItemBase::setVisible(bool visible)
+{
+	visible_ = visible;
+}
+
 void GraphicItemBase::setShaderMat4(std::string name, glm::mat4 value)
 {
 	if (shader_)

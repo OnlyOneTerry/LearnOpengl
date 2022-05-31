@@ -27,6 +27,7 @@ public:
 	void processInput(GLFWwindow* window);
 	void curse_poscallback(GLFWwindow *window, double x, double y);
 	void renderModel(glm::mat4& view, glm::mat4& projection);
+	void renderGrid(glm::mat4& view, glm::mat4& projection);
 	void renderItems(std::vector<GraphicItemBase*>& itemVec,glm::mat4& view, glm::mat4& projection);
 	//设置近平面远平面
 	void setNear(float nearDis);
@@ -64,71 +65,19 @@ private:
 	bool first_mouse_ = false;
 	GLFWwindow* window_ptr = nullptr;
 	bool move_camera_ = false;
+	//控制网格显示隐藏
+	bool show_grid_ = true;
 	//要渲染的图元
 	std::vector<GraphicItemBase*> item_vec_;
 	std::vector<GraphicModel*> model_vec_;
+	std::vector<GraphicItemBase*> grid_vec_;
 public:
 
 	//模型解析
 
 	unsigned int stlVAO, stlVBO;
-
 	void initStlVAOVBO();
-
 	std::vector<float> stlVertiecs;
-
-	void processMesh(aiMesh* mesh, std::vector<float>& vertices)
-	{
-		for (int i = 0; i < mesh->mNumVertices; i++)
-		{
-			vertices.push_back(mesh->mVertices[i].x);
-			vertices.push_back(mesh->mVertices[i].y);
-			vertices.push_back(mesh->mVertices[i].z);
-			//std::cout << "x : " << mesh->mVertices[i].x << "y : " << mesh->mVertices[i].y << "z : " << mesh->mVertices[i].z << std::endl;
-		}
-	}
-
-
-	bool DoTheImportThing(const std::string& pFile)
-	{
-		// Create an instance of the Importer class
-		Assimp::Importer importer;
-		// And have it read the given file with some example postprocessing
-		// Usually - if speed is not the most important aspect for you - you'll 
-		// propably to request more postprocessing than we do in this example.
-		const aiScene* scene = importer.ReadFile(pFile,
-			aiProcess_CalcTangentSpace |
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType);
-
-		// If the import failed, report it
-		if (!scene)
-		{
-			//DoTheErrorLogging(importer.GetErrorString());
-			std::printf("failed to import %s!\n", pFile.c_str());
-			return false;
-		}
-		// Now we can access the file's contents. 
-		//DoTheSceneProcessing(scene);
-		if (scene->HasMeshes())
-		{
-			std::printf("has %d meshes!\n", scene->mNumMeshes);
-			std::list<float> vertixAll;
-			for (int i = 0; i < scene->mNumMeshes; ++i)
-			{
-				std::printf("%d: %u vertices!\n", i, scene->mMeshes[i]->mNumVertices);
-				processMesh(scene->mMeshes[i], stlVertiecs);
-				if (scene->mMeshes[i]->HasFaces())
-				{
-					scene->mMeshes[i]->mFaces;
-				}
-					std::printf("%d: %u faces!\n", i, scene->mMeshes[i]->mNumFaces);
-			}
-		}
-		// We're done. Everything will be cleaned up by the importer destructor
-		return true;
-	}
 
 	//解析stl模型数据
 	const int STL_LABEL_SIZE = 80;

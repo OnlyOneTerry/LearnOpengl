@@ -28,6 +28,7 @@ public:
 	glm::vec3 getViewPos();
 	glm::vec3 getLightColor();
 
+	void setVisible(bool visible);
 protected:
 	// ≥ı ºªØVAO
     unsigned int vbo_, vao_,ebo_;
@@ -40,5 +41,6 @@ protected:
 	glm::vec3 lightPos_ = glm::vec3(5.0f,1.0f,0.0f);
 	glm::vec3 viewPos_ = glm::vec3(0.0f,0.0f,3.0f);
 	glm::vec3 lightColor_ = glm::vec3(1.0f,0.0f,0.0f);
+	bool visible_ = true;
 };
 

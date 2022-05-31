@@ -34,7 +34,7 @@ void PainterScene::initScene()
 
 	initPlaneVAOVBO();
 	//initTexture();
-#if 10
+#if 0
 	Shader planeShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.fs");
 	//planeShader.setInt("texture1", texture1);
 #endif
@@ -77,7 +77,7 @@ void PainterScene::initScene()
 		glDrawArrays(GL_TRIANGLES, 0, num);
 #endif 
 
-#if 1
+#if 0
 
 		//绘制plane
 		planeShader.use();
@@ -93,7 +93,10 @@ void PainterScene::initScene()
 
 #if 1
 		renderItems(item_vec_, view, projection);
-		//renderGrid(view,projection);
+		if (show_grid_)
+		{
+			renderGrid(view, projection);
+		}
 #endif 
 		//交换渲染缓冲
 		glfwSwapBuffers(window_ptr);
@@ -205,6 +208,16 @@ void PainterScene::processInput(GLFWwindow* window)
 		move_camera_ = false;
 	}
 
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+	{
+		show_grid_ = false;
+	}
+	else
+	{
+		show_grid_ = true;
+	}
+	
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
@@ -221,6 +234,7 @@ void PainterScene::processInput(GLFWwindow* window)
 		camera_.ProcessKeyboard(RIGHT, delta_time_);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 		camera_.resetPosition(0.0f, 0.0f, 10.0f);
+		
 }
 
 void PainterScene::curse_poscallback(GLFWwindow *window, double x, double y)
@@ -236,6 +250,11 @@ void PainterScene::renderModel(glm::mat4& view, glm::mat4& projection)
 	}
 }
 
+void PainterScene::renderGrid(glm::mat4 & view, glm::mat4 & projection)
+{
+	renderItems(grid_vec_, view, projection);
+}
+
 
 void PainterScene::renderItems(std::vector<GraphicItemBase*>& itemVec, glm::mat4& view,glm::mat4& projection)
 {
@@ -245,9 +264,9 @@ void PainterScene::renderItems(std::vector<GraphicItemBase*>& itemVec, glm::mat4
 		itemVec[i]->useShader();
 		itemVec[i]->setViewPos(camera_.Position);
 		itemVec[i]->setShaderVec3("viewPos", camera_.Position);
-		itemVec[i]->setShaderVec3("lightColor", item_vec_[i]->getLightColor());
-		itemVec[i]->setShaderVec3("lightPos", item_vec_[i]->getLightPos());
-		itemVec[i]->setShaderMat4("model", item_vec_[i]->getModelMatrix());
+		itemVec[i]->setShaderVec3("lightColor", itemVec[i]->getLightColor());
+		itemVec[i]->setShaderVec3("lightPos", itemVec[i]->getLightPos());
+		itemVec[i]->setShaderMat4("model", itemVec[i]->getModelMatrix());
 		itemVec[i]->setShaderMat4("view", view);
 		itemVec[i]->setShaderMat4("projection", projection);
 		itemVec[i]->drawCall();
@@ -420,12 +439,17 @@ void PainterScene::addGrid(float width, float height, int row, int col, std::str
 		lineData.push_back(p2.x);
 		lineData.push_back(p2.y);
 		lineData.push_back(p2.z+deltaZ * i);
-		addLine(lineData, vsPath, fsPath, color);
 
-		glm::vec3 pBegin = { p1.x,p1.y,p1.z + deltaZ * i };
+		GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath, color);
+		lineItem->setVertexData(lineData);
+		lineItem->initVAOVBO();
+		grid_vec_.push_back(lineItem);
+
+   /*	glm::vec3 pBegin = { p1.x,p1.y,p1.z + deltaZ * i };
 		glm::vec3 pEnd = { p2.x,p2.y,p2.z + deltaZ * i };
 		std::cout << " pBegin : " << pBegin.x << " " << pBegin.y << " " << pBegin.z << std::endl;
 		std::cout << " pEnd : " << pEnd.x << " " << pEnd.y << " " << pEnd.z << std::endl;
+	*/
 	}
 
 	//生成z方向直线
@@ -441,13 +465,11 @@ void PainterScene::addGrid(float width, float height, int row, int col, std::str
 		lineData.push_back(p4.x + deltaX * i);
 		lineData.push_back(p4.y);
 		lineData.push_back(p4.z);
-		addLine(lineData, vsPath, fsPath, color);
 
-
-		glm::vec3 pBegin = { p1.x + deltaX * i,p1.y,p1.z };
-		glm::vec3 pEnd = { p4.x + deltaX * i,p4.y,p4.z };
-		std::cout << " pBegin : " << pBegin.x << " " << pBegin.y << " " << pBegin.z << std::endl;
-		std::cout << " pEnd : " << pEnd.x << " " << pEnd.y << " " << pEnd.z << std::endl;
+		GraphicItemLine* lineItem = new GraphicItemLine(vsPath, fsPath, color);
+		lineItem->setVertexData(lineData);
+		lineItem->initVAOVBO();
+		grid_vec_.push_back(lineItem);
 	}
 }
 
@@ -455,7 +477,6 @@ void PainterScene::initStlVAOVBO()
 {
 
 	std::string file = "D:/base_link.stl";
-	//DoTheImportThing(file);
 	display_utils::STLDocument stlDoc;
 	openBinary(file,stlDoc);
 
