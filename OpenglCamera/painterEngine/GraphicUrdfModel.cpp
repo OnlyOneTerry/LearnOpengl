@@ -27,7 +27,7 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 
 	for (int i=0; i < model_.link_array.size(); i++)
 	{
-		std::cout << "link name is -----------" << model_.link_array[i].name << std::endl;
+		//std::cout << "link name is -----------" << model_.link_array[i].name << std::endl;
 
 #if 0
 		std::vector<urdf::Collision> collision_array = model_.link_array[i].collision_array;
@@ -44,13 +44,12 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			    stlItem->setLightColor(glm::vec3(1.0f, 0.1f, 0.0f));
 			    stlItem->setLightPos(glm::vec3(10.0f, 4.0f, 0.0f));
 			    stlItem->setModelmatrix(model);
-			    std::string basedir = "D:/urdfResource/";
 			    std::string replaceStr = "package://";
 			    
 			    
 			    int length = collision_array[c].geometry.mesh.filename.length();
 			    std::string filePath = collision_array[c].geometry.mesh.filename.substr(replaceStr.size(),length);
-			    std::string resultPath = basedir + filePath;
+			    std::string resultPath = package_dir_ + filePath;
 			    stlItem->setStlFilePath(resultPath);
 			    stlItem->initVAOVBO();
 			    stl_vec_.push_back(stlItem);
@@ -75,11 +74,10 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			    stlItem->setLightColor(glm::vec3(1.0f, 0.1f, 0.0f));
 			    stlItem->setLightPos(glm::vec3(10.0f, 4.0f, 0.0f));
 			    
-			    std::string basedir = "D:/urdfResource/";
 			    std::string replaceStr = "package://";
 			    int length = visual_array[v].geometry.mesh.filename.length();
 			    std::string filePath = visual_array[v].geometry.mesh.filename.substr(replaceStr.size(), length);
-			    std::string resultPath = basedir + filePath;
+			    std::string resultPath = package_dir_ + filePath;
 			    stlItem->setStlFilePath(resultPath);
 			    stlItem->initVAOVBO();
 			    stl_vec_.push_back(stlItem);
@@ -93,14 +91,10 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 	//组装机械臂
 	//1.求各个机械臂的矩
 	std::map< GraphicItemBase*, std::string>::iterator iter = stl_name_map_.begin();
-	glm::mat4 model = glm::mat4(1.0f);
 
-	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
-	{
-		dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(false);
-	}
 
 #if 0
+	glm::mat4 model = glm::mat4(1.0f);
 	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
 	{
 		if (iter->second == "base_link")
@@ -116,20 +110,32 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			rotateZ = glm::rotate(rotateZ,rpy.z, glm::vec3(baseCoordinate_.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
 			model = model * rotate;
+			std::cout << "hard coding --------base_link" << std::endl;
+			for (int m = 0; m < 4; m++)
+			{
+				for (int n = 0; n < 4; n++)
+				{
+					std::cout << model[m][n] << " ";
+					if (n == 3)
+					{
+						std::cout << "\n" << std::endl;
+					}
+				}
+			}
 			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(model);
 			dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
 			break;
 		}
 	
 	}
-
+	glm::mat4 baseModel = model;
 	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
 	{
 		if (iter->second == "base")
 		{
 			//std::cout << "line name is ----- base" << std::endl;
-			glm::vec3 rpy = { -1.57f,0.0f,0.0f };
-			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
+			glm::vec3 rpy = { -0.0f,0.0f,0.0f };
+			glm::vec3 Coordinate = baseModel * glm::vec4(baseCoordinate_, 1.0f);
 			//父类坐标系的x,y,z
 			glm::mat4 rotateX = glm::mat4(1.0f);
 			rotateX = glm::rotate(rotateX, rpy.x, glm::vec3(Coordinate.x, 0, 0));
@@ -138,8 +144,8 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 			glm::mat4 rotateZ = glm::mat4(1.0f);
 			rotateZ = glm::rotate(rotateZ, rpy.z, glm::vec3(Coordinate.z, 0, 0));
 			glm::mat4 rotate = rotateX * rotateY*rotateZ;
-			model = model * rotate;
-			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(model);
+			baseModel = baseModel * rotate;
+			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(baseModel);
 			dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
 			break;
 		}
@@ -164,11 +170,24 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.78f));
 			model = model * rotate;
+			std::cout << "hard coding --------link_1" << std::endl;
+			for (int m = 0; m < 4; m++)
+			{
+				for (int n = 0; n < 4; n++)
+				{
+					std::cout << model[m][n] << " ";
+					if (n == 3)
+					{
+						std::cout << "\n" << std::endl;
+					}
+				}
+			}
 			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(model);
 			dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
 			break;
 		}
 	}
+
 
 	glm::mat4 link2Model = glm::mat4(1.0f);
 	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
@@ -355,19 +374,18 @@ void GraphicUrdfModel::loadModel(std::string filePath, std::string vsPath, std::
 		}
 	}
 #endif
-
+	
 	createTreeNodes();
 	urdf::TFTreeNodeData* root = createTFTree();
-
+	
 	for (iter = stl_name_map_.begin(); iter != stl_name_map_.end(); iter++)
 	{
-		if (iter->second == "base_link")
-		{
-			glm::mat4 trans = calcTFTreeNodeMatrix(root, iter->second);
-			dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(trans);
-			dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
-		}
-
+		std::stack<urdf::TFTreeNodeData*> stack;
+		getPathNodesByKey(root, iter->second,stack);
+		glm::mat4 trans = glm::mat4(1.0f);
+		getNodeMatrix(trans,stack);
+		dynamic_cast<GraphicItemBase*>(iter->first)->setModelmatrix(trans);
+		dynamic_cast<GraphicItemBase*>(iter->first)->setVisible(true);
 	}
 }
 
@@ -418,7 +436,7 @@ void GraphicUrdfModel::getVec3FromString(std::string clrStr, glm::vec3 & value)
 	float g = 1.0f;
 	float b = 1.0f;
 
-	if (resStrVec.size() == 4)
+	if (resStrVec.size() == 3)
 	{
 		r = atof(resStrVec[0].c_str());
 		g = atof(resStrVec[1].c_str());
@@ -479,7 +497,23 @@ void GraphicUrdfModel::createTreeNodes()
 		getVec3FromString(model_.joint_array[i].origin.rotation_str, rpy);
 		glm::vec3 position = {0.0f,0.0f,0.0f};
 		getVec3FromString(model_.joint_array[i].origin.xyz_str, position);
+		std::cout << "link name is ----"<< node->name << std::endl;
+		std::cout << "rpy is ----"<< rpy.x<<" "<<rpy.y <<" "<<rpy.z<< std::endl;
+		std::cout << "position is ----"<< position.x<<" "<< position.y <<" "<< position.z<< std::endl;
 		calcTransformMatrix(model, rpy, Coordinate, position);
+		
+		for (int m = 0; m < 4; m++)
+		{
+			for (int n = 0; n < 4; n++)
+			{
+				std::cout << model[m][n] << " ";
+				if (n == 3)
+				{
+					std::cout << "\n" << std::endl;
+				}
+			}
+		}
+
 		node->matMatrix = model;
 		node->limit = model_.joint_array[i].limit;
 		node_vec_.push_back(node);
@@ -492,17 +526,30 @@ void GraphicUrdfModel::createTreeNodes()
 		{
 			urdf::TFTreeNodeData* node = new urdf::TFTreeNodeData;
 			node->name = model_.joint_array[i].parent_link_name;
-			glm::vec3 axis = { 0.0f,0.0f,0.0f };
+			glm::vec3 axis = { 1.0f,1.0f,1.0f };
 			getVec3FromString(model_.joint_array[i].axis, axis);
 			node->axis = axis;
 			glm::mat4 model = glm::mat4(1.0f);
 			glm::vec3 Coordinate = model * glm::vec4(baseCoordinate_, 1.0f);
 			node->coordinate = Coordinate;
 			glm::vec3 rpy = { -1.57f,0.0f,0.0f };
-			//getVec3FromString(model_.joint_array[i].origin.rotation_str, rpy);
 			glm::vec3 position = { 0.0f,0.0f,0.0f };
-			getVec3FromString(model_.joint_array[i].origin.xyz_str, position);
 			calcTransformMatrix(model, rpy, Coordinate, position);
+			std::cout << "link name is ----" << node->name << std::endl;
+			std::cout << "rpy is ----" << rpy.x << " " << rpy.y << " " << rpy.z << std::endl;
+			std::cout << "position is ----" << position.x << " " << position.y << " " << position.z << std::endl;
+			for (int m = 0; m < 4; m++)
+			{
+				for (int n = 0; n < 4; n++)
+				{
+					std::cout << model[m][n] << " ";
+					if (n == 3)
+					{
+						std::cout << "\n" << std::endl;
+					}
+				}
+			}
+
 			node->matMatrix = model;
 			node->limit = model_.joint_array[i].limit;
 			node_vec_.push_back(node);
@@ -510,7 +557,6 @@ void GraphicUrdfModel::createTreeNodes()
 	   }
 	 
 	}
-
 
 }
 
@@ -527,33 +573,47 @@ void GraphicUrdfModel::calcTransformMatrix(glm::mat4& model,glm::vec3 rpy,glm::v
 	model = model * rotate;
 }
 
-glm::mat4 GraphicUrdfModel::calcTFTreeNodeMatrix(urdf::TFTreeNodeData* node,std::string nodeName)
+void GraphicUrdfModel::getNodeMatrix(glm::mat4 & model, std::stack<urdf::TFTreeNodeData*> stack)
 {
-	glm::mat4 model = glm::mat4(1.0f);
-
-	if ((!node)|| (0 == node->childNodeDatas.size()))
+	while (!stack.empty())
 	{
-		return model;
+		model = stack.top()->matMatrix*model;
+		stack.pop();
 	}
-	if (node->name == nodeName)
-	{
-		model = node->matMatrix;
-		return model;
-	}
-	else
-	{
-		for (int i = 0; i < node->childNodeDatas.size(); i++)
-		{
-			model = model*calcTFTreeNodeMatrix( node->childNodeDatas[i],nodeName);
-		}
-	}
-	return model;
 }
 
 
 std::vector<GraphicItemBase*>& GraphicUrdfModel::getStlVec()
 {
 	return stl_vec_;
+}
+
+void GraphicUrdfModel::setPackageDir(std::string dir)
+{
+	package_dir_ = dir;
+}
+
+bool GraphicUrdfModel::getPathNodesByKey(urdf::TFTreeNodeData * node, std::string targetName, std::stack<urdf::TFTreeNodeData*>& stack)
+{
+	bool b = false;
+	if (node != nullptr) {
+		std::cout << "push name -------" << node->name << std::endl;
+		stack.push(node);
+		if (node->name == targetName) { return true; }
+		std::vector<urdf::TFTreeNodeData*> childrens = node->childNodeDatas;
+
+		for (int i = 0; i < childrens.size(); i++) {
+			b = getPathNodesByKey(childrens[i], targetName, stack);
+			if (b) {
+				break;
+			}
+		}
+
+		if (!b) {
+			stack.pop();
+		}
+	}
+	return b;
 }
 
 

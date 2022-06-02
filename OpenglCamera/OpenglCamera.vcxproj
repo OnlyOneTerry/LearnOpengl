@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="painterEngine\GraphicGrid.cpp" />
     <ClCompile Include="painterEngine\GraphicUrdfModel.cpp" />
     <ClCompile Include="painterEngine\GraphicModel.cpp" />
     <ClCompile Include="painterEngine\GraphicItemStl.cpp" />
@@ -163,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="common\commonDef.h" />
     <ClInclude Include="common\urdfDef.h" />
+    <ClInclude Include="painterEngine\GraphicGrid.h" />
     <ClInclude Include="painterEngine\GraphicUrdfModel.h" />
     <ClInclude Include="painterEngine\GraphicModel.h" />
     <ClInclude Include="painterEngine\GraphicItemStl.h" />
@@ -203,6 +205,8 @@
     <None Include="shaders\plane.vs" />
     <None Include="shaders\point.fs" />
     <None Include="shaders\point.vs" />
+    <None Include="shaders\stl.fs" />
+    <None Include="shaders\stl.vs" />
     <None Include="shaders\triangle.fs" />
     <None Include="shaders\triangle.vs" />
   </ItemGroup>

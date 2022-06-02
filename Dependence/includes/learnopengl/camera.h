@@ -66,7 +66,7 @@ public:
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix()
     {
-		// camera/view transformation
+		 //camera/view transformation
 		//glm::mat4 view = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
 		//float radius = 10.0f;
 		//float camX = sin(glfwGetTime()) * radius;
@@ -120,7 +120,6 @@ public:
 
 		Yaw += xoffset;
 		Pitch += yoffset;
-
 		// make sure that when pitch is out of bounds, screen doesn't get flipped
 
 			if (Pitch > 89.0f)

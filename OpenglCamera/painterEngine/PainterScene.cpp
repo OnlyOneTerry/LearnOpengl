@@ -32,11 +32,11 @@ void PainterScene::initScene()
 
 	//initStlVAOVBO();
 
-	initPlaneVAOVBO();
-	//initTexture();
+	//initPlaneVAOVBO();
+    //initTexture();
 #if 0
 	Shader planeShader("D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.vs", "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/plane.fs");
-	//planeShader.setInt("texture1", texture1);
+	planeShader.setInt("texture1", texture1);
 #endif
 
 	//‰÷»æ—≠ª∑
@@ -87,6 +87,7 @@ void PainterScene::initScene()
 		planeShader.setVec3("color", glm::vec3(0.5f, 0.5f, 0.5f));
 		glBindVertexArray(planeVAO);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		int num = planeVertices.size() / 3;
 		glDrawArrays(GL_TRIANGLES, 0, num);
 #endif 
@@ -387,13 +388,14 @@ void PainterScene::addBezier(std::vector<display_utils::Point2>& controlPoints, 
 	item_vec_.push_back(bezierItem);
 }
 
-void PainterScene::addModel(std::string modelPath, display_utils::ModelType type,std::string vsPath, std::string fsPath)
+void PainterScene::addModel(std::string packageDir,std::string modelPath, display_utils::ModelType type,std::string vsPath, std::string fsPath)
 {
 	switch (type)
 	{
 	case display_utils::MODE_STL:
 	{
 		GraphicUrdfModel* urdfModel = new GraphicUrdfModel(display_utils::MODE_STL);
+		urdfModel->setPackageDir(packageDir);
 		urdfModel->loadModel(modelPath, vsPath, fsPath);
 
 		if (urdfModel->getStlVec().size() > 0)

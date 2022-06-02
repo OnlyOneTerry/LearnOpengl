@@ -47,7 +47,7 @@ public:
 	void addCircle(glm::vec3 center,float r,int sectorCount, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addSphere(glm::vec3 center, float r, std::string vsPath, std::string fsPath, glm::vec3 color);
 	void addBezier(std::vector<display_utils::Point2>& controlPoints, std::string vsPath, std::string fsPath, glm::vec3 color);
-	void addModel(std::string modelPath, display_utils::ModelType type, std::string vsPath, std::string fsPath);
+	void addModel(std::string packageDir,std::string modelPath, display_utils::ModelType type, std::string vsPath, std::string fsPath);
 	void addGrid(float width, float height, int row, int col, std::string vsPath, std::string fsPath, glm::vec3 origin = { 0.0f,0.0f,0.0f }, glm::vec3 color = {1.0f,1.0f,1.0f});
 public:
 	Camera camera_;

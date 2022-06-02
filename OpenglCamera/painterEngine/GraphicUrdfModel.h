@@ -5,6 +5,7 @@
 #include "../urdfParse/UrdfParser.h"
 #include <vector>
 #include <map>
+#include <stack>
 
 class GraphicUrdfModel :public GraphicModel
 {
@@ -24,10 +25,10 @@ public:
 	urdf::TFTreeNodeData* createTFTree();
 	void createTreeNodes();
 	void calcTransformMatrix(glm::mat4& model, glm::vec3 rpy, glm::vec3 coor, glm::vec3 position);
-	glm::mat4 calcTFTreeNodeMatrix(urdf::TFTreeNodeData* node, std::string nodeName);
-	
+	void getNodeMatrix(glm::mat4& model, std::stack<urdf::TFTreeNodeData*> stack);
 	std::vector<GraphicItemBase*>& getStlVec();
-
+	void setPackageDir(std::string dir);
+	bool getPathNodesByKey(urdf::TFTreeNodeData* node, std::string targetName, std::stack<urdf::TFTreeNodeData*>& stack);
 private:
 	urdf::RobotModel model_;
 	std::vector<GraphicItemBase*> stl_vec_;
@@ -35,4 +36,5 @@ private:
 	glm::vec3 baseCoordinate_ = { 1.0f,1.0f,1.0f };//基座坐标系；
 	std::vector<std::string> link_name_vec_;//记录已经创建的节点名称
 	std::vector<urdf::TFTreeNodeData*> node_vec_;//tf树节点
+	std::string package_dir_;
 };

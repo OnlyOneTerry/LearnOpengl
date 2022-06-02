@@ -4,60 +4,25 @@
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
+#include <learnopengl/model.h>
+#include <list>
+
+#include "../urdfParse/tinyxml.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int modes);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void curse_poscallback(GLFWwindow *window, double x, double y);
+
 PainterScene painterScene;
 
-
-bool DoTheImportThing(const std::string& pFile)
-{
-	// Create an instance of the Importer class
-	Assimp::Importer importer;
-	// And have it read the given file with some example postprocessing
-	// Usually - if speed is not the most important aspect for you - you'll 
-	// propably to request more postprocessing than we do in this example.
-	const aiScene* scene = importer.ReadFile(pFile,
-		aiProcess_CalcTangentSpace |
-		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices |
-		aiProcess_SortByPType);
-
-	// If the import failed, report it
-	if (!scene)
-	{
-		//DoTheErrorLogging(importer.GetErrorString());
-		std::printf("failed to import %s!\n", pFile.c_str());
-			return false;
-	}
-	// Now we can access the file's contents. 
-	//DoTheSceneProcessing(scene);
-	if (scene->HasMeshes())
-	{
-		std::printf("has %d meshes!\n", scene->mNumMeshes);
-			for (int i = 0; i < scene->mNumMeshes; ++i)
-			{
-				std::printf("%d: %u vertices!\n", i, scene->mMeshes[i]->mNumVertices);
-					if (scene->mMeshes[i]->HasFaces())
-						std::printf("%d: %u faces!\n", i, scene->mMeshes[i]->mNumFaces);
-			}
-	}
-	// We're done. Everything will be cleaned up by the importer destructor
-	return true;
-}
-
 int main()
-{
-	std::string file = "D:/base_link.stl";
-	DoTheImportThing(file);
-	system("pause");
-
-	return 0;
-}
-
-int main1()
 {
 	painterScene.initWindow();
 	GLFWwindow* window = painterScene.getWindow();
@@ -68,6 +33,7 @@ int main1()
 		glfwSetCursorPosCallback(window, mouse_callback);
 		glfwSetMouseButtonCallback(window, mouse_button_callback);
 		glfwSetScrollCallback(window, scroll_callback);
+		//glfwSetCursorPosCallback(window, curse_poscallback);//获取鼠标位置
 	}
 	else
 	{
@@ -88,13 +54,11 @@ int main1()
 
 	std::vector<display_utils::TVertex> circleData;
 
-	std::vector<float> lineData =
+	std::vector<float> lineData1 =
 	{
-	   -1.3f,1.3f,-1.0f,
-	   1.3f,1.3f,-1.0f,
-	   2.3f,4.3f,-1.0f
+	   -10.0f,0.0f,0.0f,
+	   10.0f,0.0f,0.0f
 	};
-
 
 	std::vector<float> tr1 = {
 		-0.5f, -0.5f, -2.0f,
@@ -156,53 +120,38 @@ int main1()
 	-0.5f,  0.5f, -0.5f
 	};
 
-	//std::string baseDir = "D:/openGl/OpenglTest/OpenglCamera/OpenglCamera/shaders/";
 	char *path = NULL;
 	path = _getcwd(NULL, 1);
 	std::string baseDir(path);
 	baseDir = baseDir + "\\shaders\\";
 	//painterScene.addPoint(pointData, baseDir + "point.vs", baseDir + "point.fs", glm::vec3(1.0f, 1.0f, 0.0f));
-	//painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
-	//painterScene.addCircle(glm::vec3(0.0f,0.2f,-4.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
+	//painterScene.addLine(lineData1, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+    //painterScene.addCircle(glm::vec3(0.0f,0.2f,-4.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
 	//painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
 	//painterScene.addCircle(glm::vec3(0.0f,0.2f,-3.3f),circleData, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
 	//painterScene.addLine(lineData, baseDir + "line.vs", baseDir + "line.fs", glm::vec3(0.0f, 0.0f, 1.0f));
 	//painterScene.addCircle(glm::vec3(0.0f,0.2f,-2.3f),1.0f,16, baseDir + "circle.vs", baseDir + "circle.fs", glm::vec3(1.0f, 0.0f, 1.0f));  
-    //painterScene.addTriangle(tr2, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
-    //painterScene.addTriangle(tr3, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
-    painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
-    //painterScene.addSphere(glm::vec3(0.0f, 0.0f, 4.0f),0.5f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
-    //painterScene.addSphere(glm::vec3(0.0f, 0.0f, -4.0f), 0.8f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
+	//painterScene.addTriangle(tr2, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 0.0f));
+	//painterScene.addTriangle(tr3, baseDir + "triangle.vs", baseDir + "triangle.fs", glm::vec3(1.0f, 1.0f, 1.0f));
+	//painterScene.addCube(cubeData, baseDir + "cube.vs", baseDir + "cube.fs", glm::vec3(0.0f, 1.0f, 0.0f));
+	//painterScene.addSphere(glm::vec3(0.0f, 0.0f, 4.0f),0.5f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
+	//painterScene.addSphere(glm::vec3(0.0f, 0.0f, -4.0f), 0.8f, baseDir + "ball.vs", baseDir + "ball.fs", glm::vec3(0.0f, 1.0f, 1.0f));
 
-	std::vector<display_utils::Point2> controlPoints;
-	display_utils::Point2 a = { 0, 0.2 };
-	display_utils::Point2 b = { 0.4, 0.4 };
-	display_utils::Point2 c = { 0.3,  -0.2 };
-	display_utils::Point2 d = { 0, -0.4 };
-	controlPoints.push_back(a);
-	controlPoints.push_back(b);
-	controlPoints.push_back(c);
-	controlPoints.push_back(d);
-
-	painterScene.addBezier(controlPoints, baseDir + "bezier.vs", baseDir + "bezier.fs", glm::vec3(1.0f, 0.0f, 0.0f));
-
-	std::vector<display_utils::Point2> controlPoints2;
-
-	display_utils::Point2 a1 = { 0, -0.4 };
-	display_utils::Point2 b1 = { -0.4, -0.1 };
-	display_utils::Point2 c1 = { -0.35, 0.4 };
-	display_utils::Point2 d1 = { 0, 0.2 };
-
-	controlPoints2.push_back(a1);
-	controlPoints2.push_back(b1);
-	controlPoints2.push_back(c1);
-	controlPoints2.push_back(d1);
-
-	painterScene.addBezier(controlPoints2, baseDir + "bezier.vs", baseDir + "bezier.fs", glm::vec3(1.0f, 0.0f, 0.0f));
+	painterScene.addModel("D:/urdfResource/","D:/urdfResource/abb_irb6700_support/urdf/irb6700_150_320.urdf", display_utils::MODE_STL, baseDir + "stl.vs", baseDir + "stl.fs");
+	painterScene.addGrid(30, 30, 30, 30, baseDir + "line.vs", baseDir + "line.fs");
 #endif
 	//初始化场景
 	painterScene.initScene();
+
 	return 0;
+}
+
+
+
+void curse_poscallback(GLFWwindow *window, double x, double y)
+{
+	//std::cout << "(pos:" << x << "," << y << ")" << std::endl;
+	//painterScene.curse_poscallback(window, x, y);
 }
 
 void framebuffer_size_callback(GLFWwindow * window, int width, int height)
@@ -224,3 +173,5 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	painterScene.scroll_callback(window, xoffset, yoffset);
 }
+
+

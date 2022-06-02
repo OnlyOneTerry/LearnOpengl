@@ -99,6 +99,9 @@
     <ClCompile Include="painterEngine\GraphicUrdfModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="painterEngine\GraphicGrid.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -179,6 +182,9 @@
     <ClInclude Include="painterEngine\GraphicUrdfModel.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="painterEngine\GraphicGrid.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\triangle.fs" />
@@ -197,5 +203,7 @@
     <None Include="shaders\plane.vs" />
     <None Include="shaders\bezier.fs" />
     <None Include="shaders\bezier.vs" />
+    <None Include="shaders\stl.fs" />
+    <None Include="shaders\stl.vs" />
   </ItemGroup>
 </Project>
